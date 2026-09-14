@@ -1,22 +1,19 @@
 package tests;
 
-import models.registration.lombok.RegistrationBodyLombokModel;
-import models.registration.lombok.RegistrationResponseLombokModel;
-import models.registration.pojo.RegistrationBodyPojoModel;
-import models.registration.pojo.RegistrationResponsePojoModel;
-import models.registration.records.ErrorResponseRecordsModel;
-import models.registration.records.RegistrationBodyRecordsModel;
-import models.registration.records.RegistrationResponseRecordsModel;
+import models.registration.ErrorResponseModel;
+import models.registration.RegistrationBodyModel;
+import models.registration.RegistrationResponseModel;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static specs.BaseSpec.requestSpec;
+import static specs.BaseSpec.requestWithoutContentTypeSpec;
+import static specs.registration.RegistrationSpec.*;
 
 
 public class RegistrationTests extends TestBase {
@@ -33,88 +30,18 @@ public class RegistrationTests extends TestBase {
     }
 
     @Test
-    public void successfulRegistrationTest_with_pojo() {
+    public void successfulRegistrationTest() {
 
-        RegistrationBodyPojoModel registrationData = new RegistrationBodyPojoModel();
-        registrationData.setUsername(username);
-        registrationData.setPassword(password);
+        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
 
-        RegistrationResponsePojoModel registrationResponse = given()
-                .log().all()
-                .contentType("application/json")
+        RegistrationResponseModel registrationResponse = given(requestSpec)
                 .body(registrationData)
-                .basePath("/api/v1")
                 .when()
                 .post("/users/register/")
                 .then()
-                .log().all()
-                .statusCode(201)
-                .body("id", notNullValue())
-                .body("username", notNullValue())
-                .body("remoteAddr", notNullValue())
-                .body(matchesJsonSchemaInClasspath(
-                        "schemas/registration/successful_registration_response_schema.json"))
+                .spec(successRegistrationResponseSpec)
                 .extract()
-                .as(RegistrationResponsePojoModel.class);
-
-        String actualUsername = registrationResponse.getUsername();
-        assertThat(actualUsername).isEqualTo(username);
-
-    }
-
-    @Test
-    public void successfulRegistrationTest_with_lombok() {
-
-        RegistrationBodyLombokModel registrationData = new RegistrationBodyLombokModel();
-        registrationData.setUsername(username);
-        registrationData.setPassword(password);
-
-        RegistrationResponseLombokModel registrationResponse = given()
-                .log().all()
-                .contentType("application/json")
-                .body(registrationData)
-                .basePath("/api/v1")
-                .when()
-                .post("/users/register/")
-                .then()
-                .log().all()
-                .statusCode(201)
-                .body("id", notNullValue())
-                .body("username", notNullValue())
-                .body("remoteAddr", notNullValue())
-                .body(matchesJsonSchemaInClasspath(
-                        "schemas/registration/successful_registration_response_schema.json"))
-                .extract()
-                .as(RegistrationResponseLombokModel.class);
-
-        String actualUsername = registrationResponse.getUsername();
-        assertThat(actualUsername).isEqualTo(username);
-
-
-    }
-
-    @Test
-    public void successfulRegistrationTest_with_records() {
-
-        RegistrationBodyRecordsModel registrationData = new RegistrationBodyRecordsModel(username, password);
-
-        RegistrationResponseRecordsModel registrationResponse = given()
-                .log().all()
-                .contentType("application/json")
-                .body(registrationData)
-                .basePath("/api/v1")
-                .when()
-                .post("/users/register/")
-                .then()
-                .log().all()
-                .statusCode(201)
-                .body("id", notNullValue())
-                .body("username", notNullValue())
-                .body("remoteAddr", notNullValue())
-                .body(matchesJsonSchemaInClasspath(
-                        "schemas/registration/successful_registration_response_schema.json"))
-                .extract()
-                .as(RegistrationResponseRecordsModel.class);
+                .as(RegistrationResponseModel.class);
 
         assertThat(registrationResponse.username()).isEqualTo(username);
         assertThat(registrationResponse.id()).isGreaterThan(0);
@@ -132,43 +59,29 @@ public class RegistrationTests extends TestBase {
     @Test
     public void existingUserWrongRegistrationTest() {
 
-        RegistrationBodyRecordsModel registrationData = new RegistrationBodyRecordsModel(username, password);
+        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
 
-        RegistrationResponseRecordsModel firstRegistrationResponse = given()
-                .log().all()
-                .contentType("application/json")
+        RegistrationResponseModel firstRegistrationResponse = given(requestSpec)
                 .body(registrationData)
-                .basePath("/api/v1")
                 .when()
                 .post("/users/register/")
                 .then()
-                .log().all()
-                .statusCode(201)
-                .body(matchesJsonSchemaInClasspath(
-                        "schemas/registration/successful_registration_response_schema.json"))
+                .spec(successRegistrationResponseSpec)
                 .body("username", is(username))
-                .body("id", notNullValue())
                 .extract()
-                .as(RegistrationResponseRecordsModel.class);
+                .as(RegistrationResponseModel.class);
 
         assertThat(firstRegistrationResponse.username()).isEqualTo(username);
 
 
-        ErrorResponseRecordsModel secondRegistrationResponse = given()
-                .log().all()
-                .contentType("application/json")
+        ErrorResponseModel secondRegistrationResponse = given(requestSpec)
                 .body(registrationData)
-                .basePath("/api/v1")
                 .when()
                 .post("/users/register/")
                 .then()
-                .log().all()
-                .statusCode(400)
-                .body("username", notNullValue())
-                .body(matchesJsonSchemaInClasspath(
-                        "schemas/registration/400_registration_response_schema.json"))
+                .spec(error400RegistrationResponseSpec)
                 .extract()
-                .as(ErrorResponseRecordsModel.class);
+                .as(ErrorResponseModel.class);
 
         String expectedErrorMessage = "A user with that username already exists.";
         String actualErrorMessage = secondRegistrationResponse.username().get(0);
@@ -178,22 +91,16 @@ public class RegistrationTests extends TestBase {
     @Test
     public void invalidUsername400Test() {
 
-        RegistrationBodyRecordsModel registrationData = new RegistrationBodyRecordsModel(invalidUsername, password);
+        RegistrationBodyModel registrationData = new RegistrationBodyModel(invalidUsername, password);
 
-        ErrorResponseRecordsModel response = given()
-                .log().all()
-                .contentType("application/json")
+        ErrorResponseModel response = given(requestSpec)
                 .body(registrationData)
-                .basePath("/api/v1")
                 .when()
                 .post("/users/register/")
                 .then()
-                .log().all()
-                .statusCode(400)
-                .body(matchesJsonSchemaInClasspath(
-                        "schemas/registration/400_registration_response_schema.json"))
+                .spec(error400RegistrationResponseSpec)
                 .extract()
-                .as(ErrorResponseRecordsModel.class);
+                .as(ErrorResponseModel.class);
 
         String expectedErrorMessage =
                 "Enter a valid username. This value may contain only letters, numbers, and @/./+/-/_ characters.";
@@ -204,36 +111,28 @@ public class RegistrationTests extends TestBase {
     @Test
     public void negativeRegistration415Test() {
 
-        RegistrationBodyRecordsModel registrationData = new RegistrationBodyRecordsModel(username, password);
+        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
 
-        given()
-                .log().all()
+        given(requestWithoutContentTypeSpec)
                 .body(registrationData)
-                .basePath("/api/v1")
                 .when()
                 .post("/users/register/")
                 .then()
-                .log().all()
-                .statusCode(415)
-                .body(matchesJsonSchemaInClasspath(
-                        "schemas/registration/415_registration_response_schema.json"));
+                .spec(error415RegistrationResponseSpec);
 
     }
 
     @Test
     public void negativeRegistration301Test() {
 
-        RegistrationBodyRecordsModel registrationData = new RegistrationBodyRecordsModel(username, password);
+        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
 
-        given()
-                .log().all()
+        given(requestWithoutContentTypeSpec)
                 .body(registrationData)
-                .basePath("/api/v1")
                 .when()
                 .post("/users/register")
                 .then()
-                .log().all()
-                .statusCode(301);
+                .spec(redirect301RegistrationResponseSpec);
 
     }
 }
