@@ -3,20 +3,44 @@ package tests;
 import models.login.LoginRequestModel;
 import models.login.SuccessfulLoginReponseModel;
 import models.login.WrongCredentialsLoginResponseModel;
+import models.registration.RegistrationBodyModel;
+import models.registration.RegistrationResponseModel;
+import net.datafaker.Faker;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static specs.BaseSpec.requestSpec;
-import static specs.login.LoginSpec.*;
+import static specs.login.LoginSpec.successLoginResponseSpec;
+import static specs.login.LoginSpec.wrongCredentialsLoginResponseSpec;
+import static specs.registration.RegistrationSpec.successRegistrationResponseSpec;
 
 public class LoginTests extends TestBase {
-    String username = "renata";
-    String password = "renata123456";
-    String wrongPassword = "renata1234567";
+    String username;
+    String password;
+    String wrongPassword;
+
+    @BeforeEach
+    public void prepareTestData() {
+        Faker faker = new Faker();
+        username = faker.name().firstName();
+        password = faker.credentials().password();
+        wrongPassword = faker.credentials().password();
+    }
 
     @Test
     public void successfulLoginTest() {
+        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
+
+        given(requestSpec)
+                .body(registrationData)
+                .when()
+                .post("/users/register/")
+                .then()
+                .spec(successRegistrationResponseSpec)
+                .extract()
+                .as(RegistrationResponseModel.class);
 
         LoginRequestModel loginData = new LoginRequestModel(username, password);
 
@@ -39,6 +63,17 @@ public class LoginTests extends TestBase {
 
     @Test
     public void wrongCredentialsLoginTest() {
+
+        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
+
+        given(requestSpec)
+                .body(registrationData)
+                .when()
+                .post("/users/register/")
+                .then()
+                .spec(successRegistrationResponseSpec)
+                .extract()
+                .as(RegistrationResponseModel.class);
 
         LoginRequestModel loginData = new LoginRequestModel(username, wrongPassword);
 
