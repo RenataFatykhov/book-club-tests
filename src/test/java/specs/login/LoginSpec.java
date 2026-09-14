@@ -19,4 +19,16 @@ public class LoginSpec {
             .expectBody(matchesJsonSchemaInClasspath("schemas/login/wrong_credentials_login_response_schema.json"))
             .expectBody("detail", notNullValue())
             .build();
+
+    public static ResponseSpecification emptyUsernameLoginResponseSpec = baseResponseSpec()
+            .expectStatusCode(400)
+            .expectBody(matchesJsonSchemaInClasspath("schemas/login/empty_username_login_response_schema.json"))
+            .expectBody("username", notNullValue())
+            .build();
+
+    public static ResponseSpecification emptyPasswordLoginResponseSpec = baseResponseSpec()
+            .expectStatusCode(400)
+            .expectBody(matchesJsonSchemaInClasspath("schemas/login/empty_password_login_response_schema.json"))
+            .expectBody("password", notNullValue())
+            .build();
 }

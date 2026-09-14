@@ -1,8 +1,6 @@
 package tests;
 
-import models.login.LoginRequestModel;
-import models.login.SuccessfulLoginReponseModel;
-import models.login.WrongCredentialsLoginResponseModel;
+import models.login.*;
 import models.registration.RegistrationBodyModel;
 import models.registration.RegistrationResponseModel;
 import net.datafaker.Faker;
@@ -12,8 +10,7 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static specs.BaseSpec.requestSpec;
-import static specs.login.LoginSpec.successLoginResponseSpec;
-import static specs.login.LoginSpec.wrongCredentialsLoginResponseSpec;
+import static specs.login.LoginSpec.*;
 import static specs.registration.RegistrationSpec.successRegistrationResponseSpec;
 
 public class LoginTests extends TestBase {
@@ -89,5 +86,65 @@ public class LoginTests extends TestBase {
         String actualDetail = loginResponse.detail();
 
         assertThat(actualDetail).isEqualTo(expectedDetailError);
+    }
+
+    @Test
+    public void emptyUsernameLoginTest() {
+
+        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
+
+        given(requestSpec)
+                .body(registrationData)
+                .when()
+                .post("/users/register/")
+                .then()
+                .spec(successRegistrationResponseSpec)
+                .extract()
+                .as(RegistrationResponseModel.class);
+
+        EmptyUsernameLoginRequestModel emptyUsernameLoginData = new EmptyUsernameLoginRequestModel(password);
+
+        EmptyUsernameLoginResponseModel loginResponse = given(requestSpec)
+                .body(emptyUsernameLoginData)
+                .when()
+                .post("/auth/token/")
+                .then()
+                .spec(emptyUsernameLoginResponseSpec)
+                .extract().as(EmptyUsernameLoginResponseModel.class);
+
+        String expectedUsernameError = "This field is required.";
+        String actualUsername = loginResponse.username().get(0);
+
+        assertThat(actualUsername).isEqualTo(expectedUsernameError);
+    }
+
+    @Test
+    public void emptyPasswordLoginTest() {
+
+        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
+
+        given(requestSpec)
+                .body(registrationData)
+                .when()
+                .post("/users/register/")
+                .then()
+                .spec(successRegistrationResponseSpec)
+                .extract()
+                .as(RegistrationResponseModel.class);
+
+        EmptyPasswordLoginRequestModel emptyPasswordLoginData = new EmptyPasswordLoginRequestModel(username);
+
+        EmptyPasswordLoginResponseModel loginResponse = given(requestSpec)
+                .body(emptyPasswordLoginData)
+                .when()
+                .post("/auth/token/")
+                .then()
+                .spec(emptyPasswordLoginResponseSpec)
+                .extract().as(EmptyPasswordLoginResponseModel.class);
+
+        String expectedPasswordError = "This field is required.";
+        String actualPassword = loginResponse.password().get(0);;
+
+        assertThat(actualPassword).isEqualTo(expectedPasswordError);
     }
 }

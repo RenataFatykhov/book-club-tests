@@ -14,4 +14,13 @@ public class LogoutSpec {
             .expectBody(matchesJsonSchemaInClasspath(
                     "schemas/logout/successful_logout_response_schema.json"))
             .build();
+
+    public static ResponseSpecification wrongTokenLogoutResponseSpec = baseResponseSpec()
+            .log(ALL)
+            .expectStatusCode(401)
+            .expectBody(matchesJsonSchemaInClasspath(
+                    "schemas/logout/wrong_token_logout_response_schema.json"))
+            .expectBody("detail", notNullValue())
+            .expectBody("code", notNullValue())
+            .build();
 }
