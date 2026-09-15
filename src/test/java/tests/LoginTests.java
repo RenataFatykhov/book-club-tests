@@ -145,7 +145,6 @@ public class LoginTests extends TestBase {
                 .extract().as(EmptyPasswordLoginResponseModel.class);
 
         String actualPassword = loginResponse.password().get(0);
-        ;
 
         assertThat(actualPassword).isEqualTo(expectedPasswordError);
     }
