@@ -6,10 +6,11 @@ import models.logout.LogoutResponseModel;
 import models.logout.WrongTokenLogoutResponseModel;
 import models.registration.RegistrationBodyModel;
 import models.registration.RegistrationResponseModel;
-import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static data.TestData.*;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static specs.BaseSpec.requestSpec;
@@ -24,12 +25,12 @@ public class LogoutTests extends TestBase {
 
     @BeforeEach
     public void prepareTestData() {
-        Faker faker = new Faker();
-        username = faker.name().firstName();
-        password = faker.credentials().password();
+        username = setUsername();
+        password = setPassword();
     }
 
     @Test
+    @DisplayName("Успешный Logout")
     public void successfulLogoutTest() {
 
         RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
@@ -68,6 +69,7 @@ public class LogoutTests extends TestBase {
     }
 
     @Test
+    @DisplayName("Невалидный токен при Logout")
     public void wrongTokenLogoutTest() {
 
         RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
@@ -103,10 +105,7 @@ public class LogoutTests extends TestBase {
                 .extract()
                 .as(WrongTokenLogoutResponseModel.class);
 
-        String expectedDetail = "Token has wrong type";
         String actualDetail = logoutResponse.detail();
-
-        String expectedCode = "token_not_valid";
         String actualCode = logoutResponse.code();
 
         assertThat(actualDetail).isEqualTo(expectedDetail);

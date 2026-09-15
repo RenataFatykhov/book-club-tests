@@ -3,10 +3,11 @@ package tests;
 import models.registration.ErrorResponseModel;
 import models.registration.RegistrationBodyModel;
 import models.registration.RegistrationResponseModel;
-import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static data.TestData.*;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -23,13 +24,13 @@ public class RegistrationTests extends TestBase {
 
     @BeforeEach
     public void prepareTestData() {
-        Faker faker = new Faker();
-        username = faker.name().firstName();
-        password = faker.credentials().password();
-        invalidUsername = faker.name().fullName();
+        username = setUsername();
+        password = setPassword();
+        invalidUsername = setInvalidUsername();
     }
 
     @Test
+    @DisplayName("Успешная регистрация пользователя")
     public void successfulRegistrationTest() {
 
         RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
@@ -48,15 +49,12 @@ public class RegistrationTests extends TestBase {
         assertThat(registrationResponse.firstName()).isEqualTo("");
         assertThat(registrationResponse.lastName()).isEqualTo("");
         assertThat(registrationResponse.email()).isEqualTo("");
-
-        String ipAddrRegexp =
-                "^(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.){3}"
-                        + "(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)$";
         assertThat(registrationResponse.remoteAddr()).matches(ipAddrRegexp);
 
     }
 
     @Test
+    @DisplayName("Повторная регистрация на зарегистрированного юзера")
     public void existingUserWrongRegistrationTest() {
 
         RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
@@ -83,12 +81,12 @@ public class RegistrationTests extends TestBase {
                 .extract()
                 .as(ErrorResponseModel.class);
 
-        String expectedErrorMessage = "A user with that username already exists.";
         String actualErrorMessage = secondRegistrationResponse.username().get(0);
-        assertThat(actualErrorMessage).isEqualTo(expectedErrorMessage);
+        assertThat(actualErrorMessage).isEqualTo(expectedExistUserErrorMessage);
     }
 
     @Test
+    @DisplayName("Ввод невалидного юзера")
     public void invalidUsername400Test() {
 
         RegistrationBodyModel registrationData = new RegistrationBodyModel(invalidUsername, password);
@@ -102,13 +100,12 @@ public class RegistrationTests extends TestBase {
                 .extract()
                 .as(ErrorResponseModel.class);
 
-        String expectedErrorMessage =
-                "Enter a valid username. This value may contain only letters, numbers, and @/./+/-/_ characters.";
-        assertEquals(expectedErrorMessage, response.username().get(0));
+        assertEquals(expectedInvalidUsernameErrorMessage, response.username().get(0));
 
     }
 
     @Test
+    @DisplayName("Статус код 415")
     public void negativeRegistration415Test() {
 
         RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
@@ -123,6 +120,7 @@ public class RegistrationTests extends TestBase {
     }
 
     @Test
+    @DisplayName("Статус код 301")
     public void negativeRegistration301Test() {
 
         RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);

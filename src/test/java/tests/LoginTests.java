@@ -3,10 +3,11 @@ package tests;
 import models.login.*;
 import models.registration.RegistrationBodyModel;
 import models.registration.RegistrationResponseModel;
-import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static data.TestData.*;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static specs.BaseSpec.requestSpec;
@@ -20,13 +21,13 @@ public class LoginTests extends TestBase {
 
     @BeforeEach
     public void prepareTestData() {
-        Faker faker = new Faker();
-        username = faker.name().firstName();
-        password = faker.credentials().password();
-        wrongPassword = faker.credentials().password();
+        username = setUsername();
+        password = setPassword();
+        wrongPassword = setWrongPassword();
     }
 
     @Test
+    @DisplayName("Успешная авторизация")
     public void successfulLoginTest() {
         RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
 
@@ -49,7 +50,7 @@ public class LoginTests extends TestBase {
                 .spec(successLoginResponseSpec)
                 .extract().as(SuccessfulLoginReponseModel.class);
 
-        String expectedTokenPath = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
+
         String actualAccess = loginResponse.access();
         String actualRefresh = loginResponse.refresh();
 
@@ -59,6 +60,7 @@ public class LoginTests extends TestBase {
     }
 
     @Test
+    @DisplayName("Ввод невалидного пароля")
     public void wrongCredentialsLoginTest() {
 
         RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
@@ -82,13 +84,13 @@ public class LoginTests extends TestBase {
                 .spec(wrongCredentialsLoginResponseSpec)
                 .extract().as(WrongCredentialsLoginResponseModel.class);
 
-        String expectedDetailError = "Invalid username or password.";
         String actualDetail = loginResponse.detail();
 
         assertThat(actualDetail).isEqualTo(expectedDetailError);
     }
 
     @Test
+    @DisplayName("Отправка пустого username")
     public void emptyUsernameLoginTest() {
 
         RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
@@ -112,13 +114,13 @@ public class LoginTests extends TestBase {
                 .spec(emptyUsernameLoginResponseSpec)
                 .extract().as(EmptyUsernameLoginResponseModel.class);
 
-        String expectedUsernameError = "This field is required.";
         String actualUsername = loginResponse.username().get(0);
 
         assertThat(actualUsername).isEqualTo(expectedUsernameError);
     }
 
     @Test
+    @DisplayName("Отправка пустого password")
     public void emptyPasswordLoginTest() {
 
         RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
@@ -142,8 +144,8 @@ public class LoginTests extends TestBase {
                 .spec(emptyPasswordLoginResponseSpec)
                 .extract().as(EmptyPasswordLoginResponseModel.class);
 
-        String expectedPasswordError = "This field is required.";
-        String actualPassword = loginResponse.password().get(0);;
+        String actualPassword = loginResponse.password().get(0);
+        ;
 
         assertThat(actualPassword).isEqualTo(expectedPasswordError);
     }

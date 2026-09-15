@@ -7,10 +7,11 @@ import models.registration.RegistrationResponseModel;
 import models.update.user.AuthErrorResponseModel;
 import models.update.user.SuccessfulUserUpdateResponseModel;
 import models.update.user.UserUpdateRequestModel;
-import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static data.TestData.*;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static specs.BaseSpec.requestSpec;
@@ -29,17 +30,16 @@ public class UpdateUserTests extends TestBase {
 
     @BeforeEach
     public void prepareTestData() {
-        Faker faker = new Faker();
-        username = faker.name().firstName();
-        newUsername = faker.name().firstName();
-        password = faker.credentials().password();
-        firstName = faker.name().firstName();
-        lastName = faker.name().lastName();
-        email = faker.internet().emailAddress();
-
+        username = setUsername();
+        newUsername = setNewUsername();
+        password = setPassword();
+        firstName = setFirstName();
+        lastName = setLastName();
+        email = setEmail();
     }
 
     @Test
+    @DisplayName("Успешный апдейт юзера")
     public void successfulPutUpdateUserTest() {
         RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
 
@@ -93,6 +93,7 @@ public class UpdateUserTests extends TestBase {
     }
 
     @Test
+    @DisplayName("Отправка запроса без необходимого заголовка авторизации")
     public void authErrorPutUpdateUserTest() {
         RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
 
@@ -126,10 +127,9 @@ public class UpdateUserTests extends TestBase {
                 .spec(authErrorUserUpdateResponseSpec)
                 .extract().as(AuthErrorResponseModel.class);
 
-        String expectedDetail = "Authentication credentials were not provided.";
         String actualDetail = updateResponse.detail();
 
-        assertThat(actualDetail).isEqualTo(expectedDetail);
+        assertThat(actualDetail).isEqualTo(expectedUpdateAuthDetail);
 
     }
 
