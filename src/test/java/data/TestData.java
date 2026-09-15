@@ -2,16 +2,18 @@ package data;
 
 import net.datafaker.Faker;
 
+import java.util.UUID;
+
 public class TestData {
     private static final Faker faker = new Faker();
 
     // random
     public static String generateUsername() {
-        return faker.name().firstName();
+        return "autotest_" + UUID.randomUUID().toString().replace("-", "");
     }
 
-    public static String generateNewUsername() {
-        return faker.name().firstName();
+    public static String generateNewUsername(String currentUsername) {
+        return currentUsername + "_updated";
     }
 
     public static String generateFirstName() {

@@ -1,22 +1,18 @@
 package tests;
 
-import models.login.LoginRequestModel;
-import models.login.SuccessfulLoginReponseModel;
-import models.registration.RegistrationBodyModel;
-import models.registration.RegistrationResponseModel;
 import models.update.user.AuthErrorResponseModel;
 import models.update.user.SuccessfulUserUpdateResponseModel;
 import models.update.user.UserUpdateRequestModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import steps.AuthSteps;
+import steps.RegistrationSteps;
 
 import static data.TestData.*;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static specs.BaseSpec.requestSpec;
-import static specs.login.LoginSpec.successLoginResponseSpec;
-import static specs.registration.RegistrationSpec.successRegistrationResponseSpec;
 import static specs.update.user.UserUpdateSpec.authErrorUserUpdateResponseSpec;
 import static specs.update.user.UserUpdateSpec.successfulUserUpdateResponseSpec;
 
@@ -31,7 +27,7 @@ public class UpdateUserTests extends TestBase {
     @BeforeEach
     public void prepareTestData() {
         username = generateUsername();
-        newUsername = generateNewUsername();
+        newUsername = generateNewUsername(username);
         password = generatePassword();
         firstName = generateFirstName();
         lastName = generateLastName();
@@ -41,28 +37,16 @@ public class UpdateUserTests extends TestBase {
     @Test
     @DisplayName("Успешный апдейт юзера")
     public void successfulPutUpdateUserTest() {
-        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
 
-        given(requestSpec)
-                .body(registrationData)
-                .when()
-                .post("/users/register/")
-                .then()
-                .spec(successRegistrationResponseSpec)
-                .extract()
-                .as(RegistrationResponseModel.class);
+        RegistrationSteps registrationSteps = new RegistrationSteps();
 
-        LoginRequestModel loginData = new LoginRequestModel(username, password);
+        registrationSteps.registerUser(username, password);
 
-        SuccessfulLoginReponseModel loginResponse = given(requestSpec)
-                .body(loginData)
-                .when()
-                .post("/auth/token/")
-                .then()
-                .spec(successLoginResponseSpec)
-                .extract().as(SuccessfulLoginReponseModel.class);
+        AuthSteps authSteps = new AuthSteps();
 
-        String actualAccess = loginResponse.access();
+        String actualAccess = authSteps.login(username, password).access();
+
+        assertThat(newUsername).isNotEqualTo(username);
 
         UserUpdateRequestModel userUpdateData = new UserUpdateRequestModel(newUsername, firstName, lastName, email);
 
