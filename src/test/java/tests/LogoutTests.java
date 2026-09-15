@@ -1,22 +1,19 @@
 package tests;
 
-import models.login.LoginRequestModel;
 import models.logout.LogoutRequestModel;
 import models.logout.WrongTokenLogoutResponseModel;
-import models.registration.RegistrationBodyModel;
-import models.registration.RegistrationResponseModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import steps.AuthSteps;
+import steps.RegistrationSteps;
 
 import static data.TestData.*;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static specs.BaseSpec.requestSpec;
-import static specs.login.LoginSpec.successLoginResponseSpec;
 import static specs.logout.LogoutSpec.successfulLogoutResponseSpec;
 import static specs.logout.LogoutSpec.wrongTokenLogoutResponseSpec;
-import static specs.registration.RegistrationSpec.successRegistrationResponseSpec;
 
 public class LogoutTests extends TestBase {
     String username;
@@ -32,26 +29,12 @@ public class LogoutTests extends TestBase {
     @DisplayName("Успешный Logout")
     public void successfulLogoutTest() {
 
-        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
+        RegistrationSteps registrationSteps = new RegistrationSteps();
 
-        given(requestSpec)
-                .body(registrationData)
-                .when()
-                .post("/users/register/")
-                .then()
-                .spec(successRegistrationResponseSpec)
-                .extract()
-                .as(RegistrationResponseModel.class);
+        registrationSteps.registerUser(username, password);
 
-        LoginRequestModel loginData = new LoginRequestModel(username, password);
-
-        String refreshToken = given(requestSpec)
-                .body(loginData)
-                .when()
-                .post("/auth/token/")
-                .then()
-                .spec(successLoginResponseSpec)
-                .extract().path("refresh");
+        AuthSteps authSteps = new AuthSteps();
+        String refreshToken = authSteps.login(username, password).refresh();
 
         LogoutRequestModel logoutRequestModel = new LogoutRequestModel(refreshToken);
 
@@ -83,27 +66,12 @@ public class LogoutTests extends TestBase {
     @DisplayName("Невалидный токен при Logout")
     public void wrongTokenLogoutTest() {
 
-        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
+        RegistrationSteps registrationSteps = new RegistrationSteps();
 
-        given(requestSpec)
-                .body(registrationData)
-                .when()
-                .post("/users/register/")
-                .then()
-                .spec(successRegistrationResponseSpec)
-                .extract()
-                .as(RegistrationResponseModel.class);
+        registrationSteps.registerUser(username, password);
 
-        LoginRequestModel loginData = new LoginRequestModel(username, password);
-
-        String accessToken = given(requestSpec)
-                .body(loginData)
-                .when()
-                .post("/auth/token/")
-                .then()
-                .spec(successLoginResponseSpec)
-                .extract().path("access");
-
+        AuthSteps authSteps = new AuthSteps();
+        String accessToken = authSteps.login(username, password).access();
 
         LogoutRequestModel logoutRequestModel = new LogoutRequestModel(accessToken);
 

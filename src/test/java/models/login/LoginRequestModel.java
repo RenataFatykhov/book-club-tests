@@ -1,4 +1,4 @@
 package models.login;
 
-public record LoginRequestModel (String username, String password) {
+public record LoginRequestModel(String username, String password) {
 }

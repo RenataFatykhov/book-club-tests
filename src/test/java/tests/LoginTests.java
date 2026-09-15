@@ -1,18 +1,16 @@
 package tests;
 
 import models.login.*;
-import models.registration.RegistrationBodyModel;
-import models.registration.RegistrationResponseModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import steps.RegistrationSteps;
 
 import static data.TestData.*;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static specs.BaseSpec.requestSpec;
 import static specs.login.LoginSpec.*;
-import static specs.registration.RegistrationSpec.successRegistrationResponseSpec;
 
 public class LoginTests extends TestBase {
     String username;
@@ -29,26 +27,19 @@ public class LoginTests extends TestBase {
     @Test
     @DisplayName("Успешная авторизация")
     public void successfulLoginTest() {
-        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
+        RegistrationSteps registrationSteps = new RegistrationSteps();
 
-        given(requestSpec)
-                .body(registrationData)
-                .when()
-                .post("/users/register/")
-                .then()
-                .spec(successRegistrationResponseSpec)
-                .extract()
-                .as(RegistrationResponseModel.class);
+        registrationSteps.registerUser(username, password);
 
         LoginRequestModel loginData = new LoginRequestModel(username, password);
 
-        SuccessfulLoginReponseModel loginResponse = given(requestSpec)
+        SuccessfulLoginResponseModel loginResponse = given(requestSpec)
                 .body(loginData)
                 .when()
                 .post("/auth/token/")
                 .then()
                 .spec(successLoginResponseSpec)
-                .extract().as(SuccessfulLoginReponseModel.class);
+                .extract().as(SuccessfulLoginResponseModel.class);
 
 
         String actualAccess = loginResponse.access();
@@ -63,16 +54,9 @@ public class LoginTests extends TestBase {
     @DisplayName("Ввод невалидного пароля")
     public void wrongCredentialsLoginTest() {
 
-        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
+        RegistrationSteps registrationSteps = new RegistrationSteps();
 
-        given(requestSpec)
-                .body(registrationData)
-                .when()
-                .post("/users/register/")
-                .then()
-                .spec(successRegistrationResponseSpec)
-                .extract()
-                .as(RegistrationResponseModel.class);
+        registrationSteps.registerUser(username, password);
 
         LoginRequestModel loginData = new LoginRequestModel(username, wrongPassword);
 
