@@ -2,7 +2,6 @@ package tests;
 
 import models.login.LoginRequestModel;
 import models.logout.LogoutRequestModel;
-import models.logout.LogoutResponseModel;
 import models.logout.WrongTokenLogoutResponseModel;
 import models.registration.RegistrationBodyModel;
 import models.registration.RegistrationResponseModel;
@@ -25,8 +24,8 @@ public class LogoutTests extends TestBase {
 
     @BeforeEach
     public void prepareTestData() {
-        username = setUsername();
-        password = setPassword();
+        username = generateUsername();
+        password = generatePassword();
     }
 
     @Test
@@ -54,17 +53,29 @@ public class LogoutTests extends TestBase {
                 .spec(successLoginResponseSpec)
                 .extract().path("refresh");
 
-
         LogoutRequestModel logoutRequestModel = new LogoutRequestModel(refreshToken);
 
-        LogoutResponseModel logoutResponse = given(requestSpec)
+        given(requestSpec)
                 .body(logoutRequestModel)
                 .when()
                 .post("/auth/logout/")
                 .then()
-                .spec(successfulLogoutResponseSpec)
+                .spec(successfulLogoutResponseSpec);
+
+        WrongTokenLogoutResponseModel logoutResponse = given(requestSpec)
+                .body(logoutRequestModel)
+                .when()
+                .post("/auth/logout/")
+                .then()
+                .spec(wrongTokenLogoutResponseSpec)
                 .extract()
-                .as(LogoutResponseModel.class);
+                .as(WrongTokenLogoutResponseModel.class);
+
+        String actualDetail = logoutResponse.detail();
+        String actualCode = logoutResponse.code();
+
+        assertThat(actualDetail).isEqualTo(EXPECTED_BLOCKED_TOKEN_DETAIL);
+        assertThat(actualCode).isEqualTo(EXPECTED_TOKEN_ERROR_CODE);
 
     }
 
@@ -108,8 +119,8 @@ public class LogoutTests extends TestBase {
         String actualDetail = logoutResponse.detail();
         String actualCode = logoutResponse.code();
 
-        assertThat(actualDetail).isEqualTo(expectedDetail);
-        assertThat(actualCode).isEqualTo(expectedCode);
+        assertThat(actualDetail).isEqualTo(EXPECTED_WRONG_TOKEN_DETAIL);
+        assertThat(actualCode).isEqualTo(EXPECTED_TOKEN_ERROR_CODE);
 
     }
 }

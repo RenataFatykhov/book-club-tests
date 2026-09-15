@@ -21,9 +21,9 @@ public class LoginTests extends TestBase {
 
     @BeforeEach
     public void prepareTestData() {
-        username = setUsername();
-        password = setPassword();
-        wrongPassword = setWrongPassword();
+        username = generateUsername();
+        password = generatePassword();
+        wrongPassword = generateWrongPassword();
     }
 
     @Test
@@ -54,8 +54,8 @@ public class LoginTests extends TestBase {
         String actualAccess = loginResponse.access();
         String actualRefresh = loginResponse.refresh();
 
-        assertThat(actualAccess).startsWith(expectedTokenPath);
-        assertThat(actualRefresh).startsWith(expectedTokenPath);
+        assertThat(actualAccess).startsWith(EXPECTED_TOKEN_PATH);
+        assertThat(actualRefresh).startsWith(EXPECTED_TOKEN_PATH);
         assertThat(actualAccess).isNotEqualTo(actualRefresh);
     }
 
@@ -86,23 +86,12 @@ public class LoginTests extends TestBase {
 
         String actualDetail = loginResponse.detail();
 
-        assertThat(actualDetail).isEqualTo(expectedDetailError);
+        assertThat(actualDetail).isEqualTo(EXPECTED_LOGIN_ERROR_DETAIL);
     }
 
     @Test
     @DisplayName("Отправка пустого username")
     public void emptyUsernameLoginTest() {
-
-        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
-
-        given(requestSpec)
-                .body(registrationData)
-                .when()
-                .post("/users/register/")
-                .then()
-                .spec(successRegistrationResponseSpec)
-                .extract()
-                .as(RegistrationResponseModel.class);
 
         EmptyUsernameLoginRequestModel emptyUsernameLoginData = new EmptyUsernameLoginRequestModel(password);
 
@@ -116,23 +105,12 @@ public class LoginTests extends TestBase {
 
         String actualUsername = loginResponse.username().get(0);
 
-        assertThat(actualUsername).isEqualTo(expectedUsernameError);
+        assertThat(actualUsername).isEqualTo(EXPECTED_USERNAME_ERROR);
     }
 
     @Test
     @DisplayName("Отправка пустого password")
     public void emptyPasswordLoginTest() {
-
-        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
-
-        given(requestSpec)
-                .body(registrationData)
-                .when()
-                .post("/users/register/")
-                .then()
-                .spec(successRegistrationResponseSpec)
-                .extract()
-                .as(RegistrationResponseModel.class);
 
         EmptyPasswordLoginRequestModel emptyPasswordLoginData = new EmptyPasswordLoginRequestModel(username);
 
@@ -146,6 +124,6 @@ public class LoginTests extends TestBase {
 
         String actualPassword = loginResponse.password().get(0);
 
-        assertThat(actualPassword).isEqualTo(expectedPasswordError);
+        assertThat(actualPassword).isEqualTo(EXPECTED_PASSWORD_ERROR);
     }
 }

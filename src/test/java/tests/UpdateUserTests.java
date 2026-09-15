@@ -30,12 +30,12 @@ public class UpdateUserTests extends TestBase {
 
     @BeforeEach
     public void prepareTestData() {
-        username = setUsername();
-        newUsername = setNewUsername();
-        password = setPassword();
-        firstName = setFirstName();
-        lastName = setLastName();
-        email = setEmail();
+        username = generateUsername();
+        newUsername = generateNewUsername();
+        password = generatePassword();
+        firstName = generateFirstName();
+        lastName = generateLastName();
+        email = generateEmail();
     }
 
     @Test
@@ -95,27 +95,6 @@ public class UpdateUserTests extends TestBase {
     @Test
     @DisplayName("Отправка запроса без необходимого заголовка авторизации")
     public void authErrorPutUpdateUserTest() {
-        RegistrationBodyModel registrationData = new RegistrationBodyModel(username, password);
-
-        given(requestSpec)
-                .body(registrationData)
-                .when()
-                .post("/users/register/")
-                .then()
-                .spec(successRegistrationResponseSpec)
-                .extract()
-                .as(RegistrationResponseModel.class);
-
-        LoginRequestModel loginData = new LoginRequestModel(username, password);
-
-        SuccessfulLoginReponseModel loginResponse = given(requestSpec)
-                .body(loginData)
-                .when()
-                .post("/auth/token/")
-                .then()
-                .spec(successLoginResponseSpec)
-                .extract().as(SuccessfulLoginReponseModel.class);
-
 
         UserUpdateRequestModel userUpdateData = new UserUpdateRequestModel(newUsername, firstName, lastName, email);
 
@@ -129,7 +108,7 @@ public class UpdateUserTests extends TestBase {
 
         String actualDetail = updateResponse.detail();
 
-        assertThat(actualDetail).isEqualTo(expectedUpdateAuthDetail);
+        assertThat(actualDetail).isEqualTo(EXPECTED_UPDATE_AUTH_DETAIL);
 
     }
 

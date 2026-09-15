@@ -24,9 +24,9 @@ public class RegistrationTests extends TestBase {
 
     @BeforeEach
     public void prepareTestData() {
-        username = setUsername();
-        password = setPassword();
-        invalidUsername = setInvalidUsername();
+        username = generateUsername();
+        password = generatePassword();
+        invalidUsername = generateInvalidUsername();
     }
 
     @Test
@@ -49,7 +49,7 @@ public class RegistrationTests extends TestBase {
         assertThat(registrationResponse.firstName()).isEqualTo("");
         assertThat(registrationResponse.lastName()).isEqualTo("");
         assertThat(registrationResponse.email()).isEqualTo("");
-        assertThat(registrationResponse.remoteAddr()).matches(ipAddrRegexp);
+        assertThat(registrationResponse.remoteAddr()).matches(IP_ADDR_REGEXP);
 
     }
 
@@ -82,7 +82,7 @@ public class RegistrationTests extends TestBase {
                 .as(ErrorResponseModel.class);
 
         String actualErrorMessage = secondRegistrationResponse.username().get(0);
-        assertThat(actualErrorMessage).isEqualTo(expectedExistUserErrorMessage);
+        assertThat(actualErrorMessage).isEqualTo(EXPECTED_EXISTING_USER_ERROR_MESSAGE);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class RegistrationTests extends TestBase {
                 .extract()
                 .as(ErrorResponseModel.class);
 
-        assertEquals(expectedInvalidUsernameErrorMessage, response.username().get(0));
+        assertEquals(EXPECTED_INVALID_USERNAME_ERROR_MESSAGE, response.username().get(0));
 
     }
 
