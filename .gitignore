@@ -1,0 +1,26 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Gradle build files
+.gradle/
+build/
+out/
+
+# Compiled Java files and runtime diagnostics
+*.class
+*.log
+hs_err_pid*
+replay_pid*
+*.hprof
+
+# Local environment settings (keep shareable examples)
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# macOS
+.DS_Store
