@@ -10,6 +10,7 @@ import steps.AuthSteps;
 import steps.RegistrationSteps;
 
 import static data.TestData.*;
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static specs.BaseSpec.requestSpec;
@@ -35,49 +36,53 @@ public class UpdateUserTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Успешный апдейт юзера")
+    @DisplayName("Обновление профиля возвращает переданные значения полей")
     public void successfulPutUpdateUserTest() {
 
-        RegistrationSteps registrationSteps = new RegistrationSteps();
+        step("Зарегистрировать пользователя", () -> {
+            RegistrationSteps registrationSteps = new RegistrationSteps();
+            registrationSteps.registerUser(username, password);
+        });
 
-        registrationSteps.registerUser(username, password);
+        String actualAccess = step("Войти и получить access-токен", () -> {
+            AuthSteps authSteps = new AuthSteps();
+            return authSteps.login(username, password).access();
+        });
 
-        AuthSteps authSteps = new AuthSteps();
+        step("Обновить профиль и проверить значения полей в ответе", () -> {
+            assertThat(newUsername).isNotEqualTo(username);
 
-        String actualAccess = authSteps.login(username, password).access();
+            UserUpdateRequestModel userUpdateData = new UserUpdateRequestModel(newUsername, firstName, lastName, email);
 
-        assertThat(newUsername).isNotEqualTo(username);
+            SuccessfulUserUpdateResponseModel updateResponse = given(requestSpec)
+                    .header("Authorization", "Bearer " + actualAccess)
+                    .body(userUpdateData)
+                    .when()
+                    .put("/users/me/")
+                    .then()
+                    .spec(successfulUserUpdateResponseSpec)
+                    .extract().as(SuccessfulUserUpdateResponseModel.class);
 
-        UserUpdateRequestModel userUpdateData = new UserUpdateRequestModel(newUsername, firstName, lastName, email);
+            String expectedUsername = userUpdateData.username();
+            String expectedFirstName = userUpdateData.firstName();
+            String expectedLastName = userUpdateData.lastName();
+            String expectedEmail = userUpdateData.email();
 
-        SuccessfulUserUpdateResponseModel updateResponse = given(requestSpec)
-                .header("Authorization", "Bearer " + actualAccess)
-                .body(userUpdateData)
-                .when()
-                .put("/users/me/")
-                .then()
-                .spec(successfulUserUpdateResponseSpec)
-                .extract().as(SuccessfulUserUpdateResponseModel.class);
+            String actualUsername = updateResponse.username();
+            String actualFirstName = updateResponse.firstName();
+            String actualLastName = updateResponse.lastName();
+            String actualEmail = updateResponse.email();
 
-        String expectedUsername = userUpdateData.username();
-        String expectedFirstName = userUpdateData.firstName();
-        String expectedLastName = userUpdateData.lastName();
-        String expectedEmail = userUpdateData.email();
-
-        String actualUsername = updateResponse.username();
-        String actualFirstName = updateResponse.firstName();
-        String actualLastName = updateResponse.lastName();
-        String actualEmail = updateResponse.email();
-
-        assertThat(actualUsername).isEqualTo(expectedUsername);
-        assertThat(actualFirstName).isEqualTo(expectedFirstName);
-        assertThat(actualLastName).isEqualTo(expectedLastName);
-        assertThat(actualEmail).isEqualTo(expectedEmail);
+            assertThat(actualUsername).isEqualTo(expectedUsername);
+            assertThat(actualFirstName).isEqualTo(expectedFirstName);
+            assertThat(actualLastName).isEqualTo(expectedLastName);
+            assertThat(actualEmail).isEqualTo(expectedEmail);
+        });
 
     }
 
     @Test
-    @DisplayName("Отправка запроса без необходимого заголовка авторизации")
+    @DisplayName("Обновление профиля без Authorization возвращает 401")
     public void authErrorPutUpdateUserTest() {
 
         UserUpdateRequestModel userUpdateData = new UserUpdateRequestModel(newUsername, firstName, lastName, email);

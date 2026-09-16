@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import steps.RegistrationSteps;
 
 import static data.TestData.*;
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static specs.BaseSpec.requestSpec;
@@ -25,56 +26,63 @@ public class LoginTests extends TestBase {
     }
 
     @Test
-    @DisplayName("Успешная авторизация")
+    @DisplayName("Вход с верными учётными данными возвращает access- и refresh-токены")
     public void successfulLoginTest() {
-        RegistrationSteps registrationSteps = new RegistrationSteps();
 
-        registrationSteps.registerUser(username, password);
+        step("Зарегистрировать пользователя", () -> {
+            RegistrationSteps registrationSteps = new RegistrationSteps();
+            registrationSteps.registerUser(username, password);
+        });
 
-        LoginRequestModel loginData = new LoginRequestModel(username, password);
+        step("Выполнить вход и проверить полученные токены", () -> {
+            LoginRequestModel loginData = new LoginRequestModel(username, password);
 
-        SuccessfulLoginResponseModel loginResponse = given(requestSpec)
-                .body(loginData)
-                .when()
-                .post("/auth/token/")
-                .then()
-                .spec(successLoginResponseSpec)
-                .extract().as(SuccessfulLoginResponseModel.class);
+            SuccessfulLoginResponseModel loginResponse = given(requestSpec)
+                    .body(loginData)
+                    .when()
+                    .post("/auth/token/")
+                    .then()
+                    .spec(successLoginResponseSpec)
+                    .extract().as(SuccessfulLoginResponseModel.class);
 
 
-        String actualAccess = loginResponse.access();
-        String actualRefresh = loginResponse.refresh();
+            String actualAccess = loginResponse.access();
+            String actualRefresh = loginResponse.refresh();
 
-        assertThat(actualAccess).startsWith(EXPECTED_TOKEN_PATH);
-        assertThat(actualRefresh).startsWith(EXPECTED_TOKEN_PATH);
-        assertThat(actualAccess).isNotEqualTo(actualRefresh);
+            assertThat(actualAccess).startsWith(EXPECTED_TOKEN_PATH);
+            assertThat(actualRefresh).startsWith(EXPECTED_TOKEN_PATH);
+            assertThat(actualAccess).isNotEqualTo(actualRefresh);
+        });
     }
 
     @Test
-    @DisplayName("Ввод невалидного пароля")
+    @DisplayName("Вход с неверным паролем возвращает 401")
     public void wrongCredentialsLoginTest() {
 
-        RegistrationSteps registrationSteps = new RegistrationSteps();
+        step("Зарегистрировать пользователя", () -> {
+            RegistrationSteps registrationSteps = new RegistrationSteps();
+            registrationSteps.registerUser(username, password);
+        });
 
-        registrationSteps.registerUser(username, password);
+        step("Отправить запрос входа с неверным паролем и проверить 401", () -> {
+            LoginRequestModel loginData = new LoginRequestModel(username, wrongPassword);
 
-        LoginRequestModel loginData = new LoginRequestModel(username, wrongPassword);
+            WrongCredentialsLoginResponseModel loginResponse = given(requestSpec)
+                    .body(loginData)
+                    .when()
+                    .post("/auth/token/")
+                    .then()
+                    .spec(wrongCredentialsLoginResponseSpec)
+                    .extract().as(WrongCredentialsLoginResponseModel.class);
 
-        WrongCredentialsLoginResponseModel loginResponse = given(requestSpec)
-                .body(loginData)
-                .when()
-                .post("/auth/token/")
-                .then()
-                .spec(wrongCredentialsLoginResponseSpec)
-                .extract().as(WrongCredentialsLoginResponseModel.class);
+            String actualDetail = loginResponse.detail();
 
-        String actualDetail = loginResponse.detail();
-
-        assertThat(actualDetail).isEqualTo(EXPECTED_LOGIN_ERROR_DETAIL);
+            assertThat(actualDetail).isEqualTo(EXPECTED_LOGIN_ERROR_DETAIL);
+        });
     }
 
     @Test
-    @DisplayName("Отправка пустого username")
+    @DisplayName("Вход без поля username возвращает 400")
     public void emptyUsernameLoginTest() {
 
         EmptyUsernameLoginRequestModel emptyUsernameLoginData = new EmptyUsernameLoginRequestModel(password);
@@ -90,10 +98,11 @@ public class LoginTests extends TestBase {
         String actualUsername = loginResponse.username().get(0);
 
         assertThat(actualUsername).isEqualTo(EXPECTED_USERNAME_ERROR);
+
     }
 
     @Test
-    @DisplayName("Отправка пустого password")
+    @DisplayName("Вход без поля password возвращает 400")
     public void emptyPasswordLoginTest() {
 
         EmptyPasswordLoginRequestModel emptyPasswordLoginData = new EmptyPasswordLoginRequestModel(username);
