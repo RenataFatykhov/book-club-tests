@@ -10,11 +10,7 @@ import steps.RegistrationSteps;
 
 import static data.TestData.*;
 import static io.qameta.allure.Allure.step;
-import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static specs.BaseSpec.requestSpec;
-import static specs.logout.LogoutSpec.successfulLogoutResponseSpec;
-import static specs.logout.LogoutSpec.wrongTokenLogoutResponseSpec;
 
 public class LogoutTests extends TestBase {
     String username;
@@ -40,30 +36,18 @@ public class LogoutTests extends TestBase {
             return authSteps.login(username, password).refresh();
         });
 
-        LogoutRequestModel logoutRequestModel = new LogoutRequestModel(refreshToken);
+        LogoutRequestModel body = new LogoutRequestModel(refreshToken);
 
 
         step("Выполнить logout с refresh-токеном и проверить 200", () -> {
-            given(requestSpec)
-                    .body(logoutRequestModel)
-                    .when()
-                    .post("/auth/logout/")
-                    .then()
-                    .spec(successfulLogoutResponseSpec);
+            logoutClient.logout(body);
         });
 
         step("Повторить logout с тем же токеном и проверить ошибку блокировки", () -> {
-            WrongTokenLogoutResponseModel logoutResponse = given(requestSpec)
-                    .body(logoutRequestModel)
-                    .when()
-                    .post("/auth/logout/")
-                    .then()
-                    .spec(wrongTokenLogoutResponseSpec)
-                    .extract()
-                    .as(WrongTokenLogoutResponseModel.class);
+            WrongTokenLogoutResponseModel response = logoutClient.wrongTokenLogout(body);
 
-            String actualDetail = logoutResponse.detail();
-            String actualCode = logoutResponse.code();
+            String actualDetail = response.detail();
+            String actualCode = response.code();
 
             assertThat(actualDetail).isEqualTo(EXPECTED_BLOCKED_TOKEN_DETAIL);
             assertThat(actualCode).isEqualTo(EXPECTED_TOKEN_ERROR_CODE);
@@ -85,20 +69,13 @@ public class LogoutTests extends TestBase {
             return authSteps.login(username, password).access();
         });
 
-        LogoutRequestModel logoutRequestModel = new LogoutRequestModel(accessToken);
+        LogoutRequestModel body = new LogoutRequestModel(accessToken);
 
         step("Отправить access-токен вместо refresh и проверить ошибку 401", () -> {
-            WrongTokenLogoutResponseModel logoutResponse = given(requestSpec)
-                    .body(logoutRequestModel)
-                    .when()
-                    .post("/auth/logout/")
-                    .then()
-                    .spec(wrongTokenLogoutResponseSpec)
-                    .extract()
-                    .as(WrongTokenLogoutResponseModel.class);
+            WrongTokenLogoutResponseModel response = logoutClient.wrongTokenLogout(body);
 
-            String actualDetail = logoutResponse.detail();
-            String actualCode = logoutResponse.code();
+            String actualDetail = response.detail();
+            String actualCode = response.code();
 
             assertThat(actualDetail).isEqualTo(EXPECTED_WRONG_TOKEN_DETAIL);
             assertThat(actualCode).isEqualTo(EXPECTED_TOKEN_ERROR_CODE);

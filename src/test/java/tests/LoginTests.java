@@ -8,10 +8,7 @@ import steps.RegistrationSteps;
 
 import static data.TestData.*;
 import static io.qameta.allure.Allure.step;
-import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static specs.BaseSpec.requestSpec;
-import static specs.login.LoginSpec.*;
 
 public class LoginTests extends TestBase {
     String username;
@@ -35,19 +32,12 @@ public class LoginTests extends TestBase {
         });
 
         step("Выполнить вход и проверить полученные токены", () -> {
-            LoginRequestModel loginData = new LoginRequestModel(username, password);
+            LoginRequestModel body = new LoginRequestModel(username, password);
 
-            SuccessfulLoginResponseModel loginResponse = given(requestSpec)
-                    .body(loginData)
-                    .when()
-                    .post("/auth/token/")
-                    .then()
-                    .spec(successLoginResponseSpec)
-                    .extract().as(SuccessfulLoginResponseModel.class);
+            SuccessfulLoginResponseModel response = loginClient.login(body);
 
-
-            String actualAccess = loginResponse.access();
-            String actualRefresh = loginResponse.refresh();
+            String actualAccess = response.access();
+            String actualRefresh = response.refresh();
 
             assertThat(actualAccess).startsWith(EXPECTED_TOKEN_PATH);
             assertThat(actualRefresh).startsWith(EXPECTED_TOKEN_PATH);
@@ -65,17 +55,11 @@ public class LoginTests extends TestBase {
         });
 
         step("Отправить запрос входа с неверным паролем и проверить 401", () -> {
-            LoginRequestModel loginData = new LoginRequestModel(username, wrongPassword);
+            LoginRequestModel body = new LoginRequestModel(username, wrongPassword);
 
-            WrongCredentialsLoginResponseModel loginResponse = given(requestSpec)
-                    .body(loginData)
-                    .when()
-                    .post("/auth/token/")
-                    .then()
-                    .spec(wrongCredentialsLoginResponseSpec)
-                    .extract().as(WrongCredentialsLoginResponseModel.class);
+            WrongCredentialsLoginResponseModel response = loginClient.wrongCredentialsLogin(body);
 
-            String actualDetail = loginResponse.detail();
+            String actualDetail = response.detail();
 
             assertThat(actualDetail).isEqualTo(EXPECTED_LOGIN_ERROR_DETAIL);
         });
@@ -87,15 +71,9 @@ public class LoginTests extends TestBase {
 
         EmptyUsernameLoginRequestModel emptyUsernameLoginData = new EmptyUsernameLoginRequestModel(password);
 
-        EmptyUsernameLoginResponseModel loginResponse = given(requestSpec)
-                .body(emptyUsernameLoginData)
-                .when()
-                .post("/auth/token/")
-                .then()
-                .spec(emptyUsernameLoginResponseSpec)
-                .extract().as(EmptyUsernameLoginResponseModel.class);
+        EmptyUsernameLoginResponseModel response = loginClient.emptyUsernameLogin(emptyUsernameLoginData);
 
-        String actualUsername = loginResponse.username().get(0);
+        String actualUsername = response.username().get(0);
 
         assertThat(actualUsername).isEqualTo(EXPECTED_USERNAME_ERROR);
 
@@ -107,15 +85,9 @@ public class LoginTests extends TestBase {
 
         EmptyPasswordLoginRequestModel emptyPasswordLoginData = new EmptyPasswordLoginRequestModel(username);
 
-        EmptyPasswordLoginResponseModel loginResponse = given(requestSpec)
-                .body(emptyPasswordLoginData)
-                .when()
-                .post("/auth/token/")
-                .then()
-                .spec(emptyPasswordLoginResponseSpec)
-                .extract().as(EmptyPasswordLoginResponseModel.class);
+        EmptyPasswordLoginResponseModel response = loginClient.emptyPasswordLogin(emptyPasswordLoginData);
 
-        String actualPassword = loginResponse.password().get(0);
+        String actualPassword = response.password().get(0);
 
         assertThat(actualPassword).isEqualTo(EXPECTED_PASSWORD_ERROR);
     }
