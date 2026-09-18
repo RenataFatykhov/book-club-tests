@@ -1,5 +1,6 @@
 package clients;
 
+import io.qameta.allure.Step;
 import models.update.user.AuthErrorResponseModel;
 import models.update.user.SuccessfulUserUpdateResponseModel;
 import models.update.user.UserUpdateRequestModel;
@@ -11,6 +12,7 @@ import static specs.update.user.UserUpdateSpec.successfulUserUpdateResponseSpec;
 
 public class UserApiClient {
 
+    @Step("Обновить профиль с авторизацией")
     public SuccessfulUserUpdateResponseModel updateUser(UserUpdateRequestModel body, String actualAccess) {
         return given(requestSpec)
                 .header("Authorization", "Bearer " + actualAccess)
@@ -22,6 +24,7 @@ public class UserApiClient {
                 .extract().as(SuccessfulUserUpdateResponseModel.class);
     }
 
+    @Step("Отправить запрос обновления профиля без авторизации")
     public AuthErrorResponseModel authErrorUpdateUser(UserUpdateRequestModel body) {
         return given(requestSpec)
                 .body(body)

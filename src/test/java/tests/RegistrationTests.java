@@ -33,12 +33,14 @@ public class RegistrationTests extends TestBase {
 
         RegistrationResponseModel response = registrationClient.register(body);
 
-        assertThat(response.username()).isEqualTo(username);
-        assertThat(response.id()).isGreaterThan(0);
-        assertThat(response.firstName()).isEqualTo("");
-        assertThat(response.lastName()).isEqualTo("");
-        assertThat(response.email()).isEqualTo("");
-        assertThat(response.remoteAddr()).matches(IP_ADDR_REGEXP);
+        step("Проверить данные зарегистрированного пользователя и формат IP-адреса", () -> {
+            assertThat(response.username()).isEqualTo(username);
+            assertThat(response.id()).isGreaterThan(0);
+            assertThat(response.firstName()).isEqualTo("");
+            assertThat(response.lastName()).isEqualTo("");
+            assertThat(response.email()).isEqualTo("");
+            assertThat(response.remoteAddr()).matches(IP_ADDR_REGEXP);
+        });
 
     }
 
@@ -48,15 +50,15 @@ public class RegistrationTests extends TestBase {
 
         RegistrationBodyModel body = new RegistrationBodyModel(username, password);
 
-        step("Зарегистрировать пользователя с новым username", () -> {
-            RegistrationResponseModel firstResponse = registrationClient.register(body);
+        RegistrationResponseModel firstResponse = registrationClient.register(body);
 
+        step("Проверить username созданного пользователя", () -> {
             assertThat(firstResponse.username()).isEqualTo(username);
         });
 
-        step("Повторить регистрацию с тем же username и проверить 400", () -> {
-            ErrorResponseModel secondResponse = registrationClient.registerExistingUser(body);
+        ErrorResponseModel secondResponse = registrationClient.registerExistingUser(body);
 
+        step("Проверить сообщение об ошибке регистрации с занятым username", () -> {
             String actualErrorMessage = secondResponse.username().get(0);
             assertThat(actualErrorMessage).isEqualTo(EXPECTED_EXISTING_USER_ERROR_MESSAGE);
         });
@@ -66,11 +68,13 @@ public class RegistrationTests extends TestBase {
     @DisplayName("Регистрация с недопустимыми символами в username возвращает 400")
     public void invalidUsername400Test() {
 
-        RegistrationBodyModel body = new RegistrationBodyModel(username, password);
+        RegistrationBodyModel body = new RegistrationBodyModel(invalidUsername, password);
 
         ErrorResponseModel response = registrationClient.registerInvalidUser(body);
 
-        assertEquals(EXPECTED_INVALID_USERNAME_ERROR_MESSAGE, response.username().get(0));
+        step("Проверить сообщение о недопустимых символах в username", () -> {
+            assertEquals(EXPECTED_INVALID_USERNAME_ERROR_MESSAGE, response.username().get(0));
+        });
 
     }
 

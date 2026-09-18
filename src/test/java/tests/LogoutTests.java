@@ -26,26 +26,19 @@ public class LogoutTests extends TestBase {
     @DisplayName("Logout отзывает refresh-токен и отклоняет его повторное использование")
     public void successfulLogoutTest() {
 
-        step("Зарегистрировать пользователя", () -> {
-            RegistrationSteps registrationSteps = new RegistrationSteps();
-            registrationSteps.registerUser(username, password);
-        });
+        RegistrationSteps registrationSteps = new RegistrationSteps();
+        registrationSteps.registerUser(username, password);
 
-        String refreshToken = step("Войти и получить refresh-токен", () -> {
-            AuthSteps authSteps = new AuthSteps();
-            return authSteps.login(username, password).refresh();
-        });
+        AuthSteps authSteps = new AuthSteps();
+        String refreshToken = authSteps.login(username, password).refresh();
 
         LogoutRequestModel body = new LogoutRequestModel(refreshToken);
 
+        logoutClient.logout(body);
 
-        step("Выполнить logout с refresh-токеном и проверить 200", () -> {
-            logoutClient.logout(body);
-        });
+        WrongTokenLogoutResponseModel response = logoutClient.wrongTokenLogout(body);
 
-        step("Повторить logout с тем же токеном и проверить ошибку блокировки", () -> {
-            WrongTokenLogoutResponseModel response = logoutClient.wrongTokenLogout(body);
-
+        step("Проверить сообщение и код ошибки блокировки refresh-токена", () -> {
             String actualDetail = response.detail();
             String actualCode = response.code();
 
@@ -59,21 +52,17 @@ public class LogoutTests extends TestBase {
     @DisplayName("Logout с access-токеном вместо refresh возвращает 401")
     public void wrongTokenLogoutTest() {
 
-        step("Зарегистрировать пользователя", () -> {
-            RegistrationSteps registrationSteps = new RegistrationSteps();
-            registrationSteps.registerUser(username, password);
-        });
+        RegistrationSteps registrationSteps = new RegistrationSteps();
+        registrationSteps.registerUser(username, password);
 
-        String accessToken = step("Войти и получить access-токен", () -> {
-            AuthSteps authSteps = new AuthSteps();
-            return authSteps.login(username, password).access();
-        });
+        AuthSteps authSteps = new AuthSteps();
+        String accessToken = authSteps.login(username, password).access();
 
         LogoutRequestModel body = new LogoutRequestModel(accessToken);
 
-        step("Отправить access-токен вместо refresh и проверить ошибку 401", () -> {
-            WrongTokenLogoutResponseModel response = logoutClient.wrongTokenLogout(body);
+        WrongTokenLogoutResponseModel response = logoutClient.wrongTokenLogout(body);
 
+        step("Проверить сообщение и код ошибки при передаче access-токена вместо refresh", () -> {
             String actualDetail = response.detail();
             String actualCode = response.code();
 

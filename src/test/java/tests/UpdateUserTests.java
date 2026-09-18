@@ -35,23 +35,21 @@ public class UpdateUserTests extends TestBase {
     @DisplayName("Обновление профиля возвращает переданные значения полей")
     public void successfulPutUpdateUserTest() {
 
-        step("Зарегистрировать пользователя", () -> {
-            RegistrationSteps registrationSteps = new RegistrationSteps();
-            registrationSteps.registerUser(username, password);
-        });
+        RegistrationSteps registrationSteps = new RegistrationSteps();
+        registrationSteps.registerUser(username, password);
 
-        String actualAccess = step("Войти и получить access-токен", () -> {
-            AuthSteps authSteps = new AuthSteps();
-            return authSteps.login(username, password).access();
-        });
+        AuthSteps authSteps = new AuthSteps();
+        String actualAccess = authSteps.login(username, password).access();
 
-        step("Обновить профиль и проверить значения полей в ответе", () -> {
+        step("Проверить, что новый username отличается от исходного", () -> {
             assertThat(newUsername).isNotEqualTo(username);
+        });
 
-            UserUpdateRequestModel body = new UserUpdateRequestModel(newUsername, firstName, lastName, email);
+        UserUpdateRequestModel body = new UserUpdateRequestModel(newUsername, firstName, lastName, email);
 
-            SuccessfulUserUpdateResponseModel response = userClient.updateUser(body, actualAccess);
+        SuccessfulUserUpdateResponseModel response = userClient.updateUser(body, actualAccess);
 
+        step("Проверить соответствие полей обновлённого профиля отправленным значениям", () -> {
             String expectedUsername = body.username();
             String expectedFirstName = body.firstName();
             String expectedLastName = body.lastName();
@@ -78,9 +76,11 @@ public class UpdateUserTests extends TestBase {
 
         AuthErrorResponseModel response = userClient.authErrorUpdateUser(body);
 
-        String actualDetail = response.detail();
+        step("Проверить сообщение об отсутствии авторизации при обновлении профиля", () -> {
+            String actualDetail = response.detail();
 
-        assertThat(actualDetail).isEqualTo(EXPECTED_UPDATE_AUTH_DETAIL);
+            assertThat(actualDetail).isEqualTo(EXPECTED_UPDATE_AUTH_DETAIL);
+        });
 
     }
 
