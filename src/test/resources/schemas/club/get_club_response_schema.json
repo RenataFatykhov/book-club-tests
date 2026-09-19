@@ -10,14 +10,15 @@
           "type": "integer"
         },
         "next": {
-          "type": "string",
+          "type": ["string", "null"],
           "format": "uri",
           "qt-uri-protocols": [
             "http"
           ]
         },
         "previous": {
-          "type": "null"
+          "type": ["string", "null"],
+          "format": "uri"
         },
         "results": {
           "type": "array",
@@ -133,7 +134,8 @@
           "format": "date-time"
         },
         "modified": {
-          "type": "null"
+          "type": ["string", "null"],
+          "format": "date-time"
         }
       },
       "required": [
