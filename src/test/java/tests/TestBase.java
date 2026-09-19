@@ -11,6 +11,7 @@ public class TestBase {
     protected LoginApiClient loginClient;
     protected LogoutApiClient logoutClient;
     protected UserApiClient userClient;
+    protected ClubsApiClient clubsClient;
 
     @BeforeAll
     public static void setUp() {
@@ -23,6 +24,7 @@ public class TestBase {
         loginClient = new LoginApiClient();
         logoutClient = new LogoutApiClient();
         userClient = new UserApiClient();
+        clubsClient = new ClubsApiClient();
     }
 
 }
