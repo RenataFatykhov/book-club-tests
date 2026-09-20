@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ClubsTests extends TestBase {
 
     @Test
+    @DisplayName("Получение списка клубов")
     public void getClubsWithoutParametersTest() {
         clubsClient.noParametersGetClubs();
     }
