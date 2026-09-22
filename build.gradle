@@ -8,7 +8,8 @@ repositories {
 }
 
 def restAssuredVersion = "6.0.0",
-        allureVersion = "2.35.3"
+        allureVersion = "2.35.3",
+        selenideVersion = "7.13.0"
 
 allure {
     report {
@@ -38,6 +39,7 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:1.18.48")
     testImplementation "io.qameta.allure:allure-selenide:${allureVersion}"
     testImplementation "io.qameta.allure:allure-rest-assured:${allureVersion}"
+    testImplementation "com.codeborne:selenide:${selenideVersion}"
 }
 
 tasks.withType(JavaCompile) {

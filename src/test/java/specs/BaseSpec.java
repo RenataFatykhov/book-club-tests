@@ -12,13 +12,11 @@ public class BaseSpec {
     public static RequestSpecification requestSpec = with()
             .filter(withCustomTemplate())
             .log().all()
-            .contentType("application/json")
-            .basePath("/api/v1");
+            .contentType("application/json");
 
     public static RequestSpecification requestWithoutContentTypeSpec = with()
             .filter(withCustomTemplate())
-            .log().all()
-            .basePath("/api/v1");
+            .log().all();
 
     public static ResponseSpecification responseSpec = new ResponseSpecBuilder()
             .log(ALL)
