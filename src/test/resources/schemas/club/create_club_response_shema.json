@@ -6,45 +6,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "count": {
-          "type": "integer"
-        },
-        "next": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "uri",
-          "qt-uri-protocols": [
-            "http"
-          ]
-        },
-        "previous": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "uri"
-        },
-        "results": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Result"
-          }
-        }
-      },
-      "required": [
-        "count",
-        "next",
-        "previous",
-        "results"
-      ],
-      "title": "Welcome1"
-    },
-    "Result": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
         "id": {
           "type": "integer"
         },
@@ -61,11 +22,7 @@
           "type": "string"
         },
         "telegramChatLink": {
-          "type": "string",
-          "format": "uri",
-          "qt-uri-protocols": [
-            "https"
-          ]
+          "type": "string"
         },
         "owner": {
           "type": "integer"
@@ -87,15 +44,11 @@
           "format": "date-time"
         },
         "modified": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "date-time"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
         }
       },
       "required": [
@@ -111,7 +64,7 @@
         "reviews",
         "telegramChatLink"
       ],
-      "title": "Result"
+      "title": "Welcome1"
     },
     "Review": {
       "type": "object",
@@ -140,10 +93,7 @@
           "format": "date-time"
         },
         "modified": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": "string",
           "format": "date-time"
         }
       },

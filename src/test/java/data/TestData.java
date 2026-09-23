@@ -40,6 +40,26 @@ public class TestData {
         return faker.internet().emailAddress();
     }
 
+    public static String generateBookTitle() {
+        return "autotest_" + UUID.randomUUID().toString().replace("-", "");
+    }
+
+    public static String generateBookAuthors() {
+        return faker.book().author();
+    }
+
+    public static int generatePublicationYear() {
+        return faker.number().numberBetween(1000, 2026);
+    }
+
+    public static String generateDescription() {
+        return faker.lorem().paragraph(5);
+    }
+
+    public static String generateTelegramChatLink() {
+        return "https://t.me/" + faker.name().firstName();
+    }
+
 
     // registration
     public static final String IP_ADDR_REGEXP =
@@ -63,4 +83,7 @@ public class TestData {
 
     // update
     public static final String EXPECTED_UPDATE_AUTH_DETAIL = "Authentication credentials were not provided.";
+
+    // create book club
+    public static final String EXPECTED_EXISTING_CLUB_ERROR_MESSAGE = "Book Club with this Book Title already exists.";
 }

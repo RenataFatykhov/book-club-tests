@@ -2,7 +2,7 @@ package models.clubs;
 
 import java.util.List;
 
-public record ResultsModel(
+public record ResultsClubModel(
         Integer id,
         String bookTitle,
         String bookAuthors,

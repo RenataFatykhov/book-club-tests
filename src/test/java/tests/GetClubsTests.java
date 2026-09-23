@@ -2,7 +2,7 @@ package tests;
 
 import models.clubs.ClubRequestPaginationModel;
 import models.clubs.ClubResponseModel;
-import models.clubs.ResultsModel;
+import models.clubs.ResultsClubModel;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +13,7 @@ import java.util.List;
 import static io.qameta.allure.Allure.step;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ClubsTests extends TestBase {
+public class GetClubsTests extends TestBase {
 
     @Test
     @DisplayName("Получение списка клубов")
@@ -63,10 +63,10 @@ public class ClubsTests extends TestBase {
 
         step("Проверить уникальность ID клубов и отсутствие повторений между страницами", () -> {
             List<Integer> firstPageIds = firstResponse.results().stream()
-                    .map(ResultsModel::id)
+                    .map(ResultsClubModel::id)
                     .toList();
             List<Integer> secondPageIds = secondResponse.results().stream()
-                    .map(ResultsModel::id)
+                    .map(ResultsClubModel::id)
                     .toList();
 
             assertThat(firstPageIds).doesNotContainNull().doesNotHaveDuplicates();

@@ -1,6 +1,6 @@
 package models.local_storage;
 
-public record UserModel(
+public record UserLocalStorageModel(
         Integer id,
         String username,
         String firstName,

@@ -13,6 +13,7 @@ public class TestBase {
     protected LogoutApiClient logoutClient;
     protected UserApiClient userClient;
     protected ClubsApiClient clubsClient;
+    protected CreateClubsApiClient createClubsClient;
 
     @BeforeAll
     public static void setUp() {
@@ -25,12 +26,13 @@ public class TestBase {
     }
 
     @BeforeEach
-    public void setUpClients(){
+    public void setUpClients() {
         registrationClient = new RegistrationApiClient();
         loginClient = new LoginApiClient();
         logoutClient = new LogoutApiClient();
         userClient = new UserApiClient();
         clubsClient = new ClubsApiClient();
+        createClubsClient = new CreateClubsApiClient();
     }
 
 }

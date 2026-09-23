@@ -3,7 +3,7 @@ package tests;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import models.local_storage.AuthModel;
-import models.local_storage.UserModel;
+import models.local_storage.UserLocalStorageModel;
 import models.login.LoginRequestModel;
 import models.login.SuccessfulLoginResponseModel;
 import models.registration.RegistrationBodyModel;
@@ -41,7 +41,7 @@ public class ClubTests extends TestBase {
         String accessToken = loginResponse.access();
         String refreshToken = loginResponse.refresh();
 
-        UserModel user = new UserModel(
+        UserLocalStorageModel user = new UserLocalStorageModel(
                 regResponse.id(),
                 regResponse.username(),
                 regResponse.firstName(),

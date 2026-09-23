@@ -6,6 +6,6 @@ public record ClubResponseModel(
         int count,
         String next,
         String previous,
-        List<ResultsModel> results
+        List<ResultsClubModel> results
 ) {
 }

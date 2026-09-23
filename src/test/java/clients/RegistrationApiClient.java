@@ -13,7 +13,7 @@ import static specs.registration.RegistrationSpec.*;
 public class RegistrationApiClient {
 
     @Step("Зарегистрировать пользователя")
-    public RegistrationResponseModel register(RegistrationBodyModel body){
+    public RegistrationResponseModel register(RegistrationBodyModel body) {
         return given(requestSpec)
                 .body(body)
                 .when()
@@ -25,7 +25,7 @@ public class RegistrationApiClient {
     }
 
     @Step("Отправить запрос регистрации с занятым username")
-    public ErrorResponseModel registerExistingUser(RegistrationBodyModel body){
+    public ErrorResponseModel registerExistingUser(RegistrationBodyModel body) {
         return given(requestSpec)
                 .body(body)
                 .when()
@@ -37,7 +37,7 @@ public class RegistrationApiClient {
     }
 
     @Step("Отправить запрос регистрации с недопустимым username")
-    public ErrorResponseModel registerInvalidUser(RegistrationBodyModel body){
+    public ErrorResponseModel registerInvalidUser(RegistrationBodyModel body) {
         return given(requestSpec)
                 .body(body)
                 .when()
@@ -49,7 +49,7 @@ public class RegistrationApiClient {
     }
 
     @Step("Отправить запрос регистрации без явно заданного Content-Type")
-    public void registerWithoutContentType(RegistrationBodyModel body){
+    public void registerWithoutContentType(RegistrationBodyModel body) {
         given(requestWithoutContentTypeSpec)
                 .body(body)
                 .when()
@@ -59,7 +59,7 @@ public class RegistrationApiClient {
     }
 
     @Step("Отправить запрос регистрации без завершающего слеша")
-    public void registerWithoutSlash(RegistrationBodyModel body){
+    public void registerWithoutSlash(RegistrationBodyModel body) {
         given(requestWithoutContentTypeSpec)
                 .body(body)
                 .when()

@@ -12,7 +12,7 @@ import static specs.logout.LogoutSpec.wrongTokenLogoutResponseSpec;
 public class LogoutApiClient {
 
     @Step("Выполнить logout с refresh-токеном")
-    public void logout(LogoutRequestModel body){
+    public void logout(LogoutRequestModel body) {
         given(requestSpec)
                 .body(body)
                 .when()
@@ -22,7 +22,7 @@ public class LogoutApiClient {
     }
 
     @Step("Выполнить logout с недействительным токеном")
-    public WrongTokenLogoutResponseModel wrongTokenLogout(LogoutRequestModel body){
+    public WrongTokenLogoutResponseModel wrongTokenLogout(LogoutRequestModel body) {
         return given(requestSpec)
                 .body(body)
                 .when()
