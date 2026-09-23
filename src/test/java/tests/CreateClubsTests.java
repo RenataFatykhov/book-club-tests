@@ -42,7 +42,7 @@ public class CreateClubsTests extends TestBase {
         int expectedlId = registrationSteps.registerUser(username, password).id();
 
         AuthSteps authSteps = new AuthSteps();
-        String actualAccess = authSteps.login(username, password).access();
+        String accessToken = authSteps.login(username, password).access();
 
         CreateClubRequestModel body = new CreateClubRequestModel(
                 bookTitle,
@@ -52,7 +52,7 @@ public class CreateClubsTests extends TestBase {
                 telegramChatLink
         );
 
-        ResultsClubModel response = createClubsClient.createClub(body, actualAccess);
+        ResultsClubModel response = createClubsClient.createClub(body, accessToken);
 
         step("Проверить данные созданного книжного клуба", () -> {
             assertThat(response.owner()).isEqualTo(expectedlId);
@@ -72,7 +72,7 @@ public class CreateClubsTests extends TestBase {
         registrationSteps.registerUser(username, password);
 
         AuthSteps authSteps = new AuthSteps();
-        String actualAccess = authSteps.login(username, password).access();
+        String accessToken = authSteps.login(username, password).access();
 
         CreateClubRequestModel body = new CreateClubRequestModel(
                 bookTitle,
@@ -82,9 +82,9 @@ public class CreateClubsTests extends TestBase {
                 telegramChatLink
         );
 
-        createClubsClient.createClub(body, actualAccess);
+        createClubsClient.createClub(body, accessToken);
 
-        ExistingClubResponseModel secondResponse = createClubsClient.createExistingClub(body, actualAccess);
+        ExistingClubResponseModel secondResponse = createClubsClient.createExistingClub(body, accessToken);
 
         step("Проверить сообщение о невозможности повторно создать уже существующий книжный клуб", () -> {
             assertThat(secondResponse.bookTitle().get(0)).isEqualTo(EXPECTED_EXISTING_CLUB_ERROR_MESSAGE);

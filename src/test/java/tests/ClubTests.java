@@ -1,7 +1,8 @@
 package tests;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import models.clubs.CreateClubRequestModel;
+import models.clubs.ResultsClubModel;
 import models.local_storage.AuthModel;
 import models.local_storage.UserLocalStorageModel;
 import models.login.LoginRequestModel;
@@ -11,14 +12,19 @@ import models.registration.RegistrationResponseModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static com.codeborne.selenide.Condition.*;
-import static com.codeborne.selenide.Selectors.byText;
+import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
-import static data.TestData.generatePassword;
-import static data.TestData.generateUsername;
+import static data.TestData.*;
+import static io.qameta.allure.Allure.step;
 
 public class ClubTests extends TestBase {
 
+    String bookTitle;
+    String bookAuthors;
+    int publicationYear;
+    String description;
+    String telegramChatLink;
     String username;
     String password;
 
@@ -26,56 +32,66 @@ public class ClubTests extends TestBase {
     public void prepareTestData() {
         username = generateUsername();
         password = generatePassword();
+        bookTitle = generateBookTitle();
+        bookAuthors = generateBookAuthors();
+        publicationYear = generatePublicationYear();
+        description = generateDescription();
+        telegramChatLink = generateTelegramChatLink();
     }
 
     @Test
-    public void cantLeaveClubAsAdminTest() throws JsonProcessingException {
-        // register user
-        RegistrationBodyModel regBody = new RegistrationBodyModel(username, password);
-        RegistrationResponseModel regResponse = registrationClient.register(regBody);
+    public void cantLeaveClubAsOwnerTest() {
 
-        //login user
-        LoginRequestModel loginBody = new LoginRequestModel(username, password);
-        SuccessfulLoginResponseModel loginResponse = loginClient.login(loginBody);
+        step("Открытие приложения с авторизацией из localStorage", () -> {
+            // register user
+            RegistrationBodyModel regBody = new RegistrationBodyModel(username, password);
+            RegistrationResponseModel regResponse = registrationClient.register(regBody);
 
-        String accessToken = loginResponse.access();
-        String refreshToken = loginResponse.refresh();
+            //login user
+            LoginRequestModel loginBody = new LoginRequestModel(username, password);
+            SuccessfulLoginResponseModel loginResponse = loginClient.login(loginBody);
 
-        UserLocalStorageModel user = new UserLocalStorageModel(
-                regResponse.id(),
-                regResponse.username(),
-                regResponse.firstName(),
-                regResponse.lastName(),
-                regResponse.email(),
-                regResponse.remoteAddr()
-        );
-        AuthModel auth = new AuthModel(user, accessToken, refreshToken, true);
-        String localStorageAuthBody = new ObjectMapper().writeValueAsString(auth);
+            String accessToken = loginResponse.access();
+            String refreshToken = loginResponse.refresh();
 
-        open("/favicon.ico");
-        localStorage().setItem("book_club_auth", localStorageAuthBody);
+            String localStorageAuthBody = step("Создание JSON авторизации для localStorage", () -> {
+                UserLocalStorageModel user = new UserLocalStorageModel(
+                        regResponse.id(),
+                        regResponse.username(),
+                        regResponse.firstName(),
+                        regResponse.lastName(),
+                        regResponse.email(),
+                        regResponse.remoteAddr()
+                );
+                AuthModel auth = new AuthModel(user, accessToken, refreshToken, true);
+                return new ObjectMapper().writeValueAsString(auth);
+            });
 
-        // create club
-        open("/clubs/create");
-        $("#bookTitle").setValue(username);
-        $("#bookAuthors").setValue(username);
-        $("#publicationYear").setValue("2020");
-        $("#description").setValue(username);
-        $("#telegramChatLink").setValue("https://t.me/qa_guru" + username).pressEnter();
+            // create club
+            CreateClubRequestModel body = new CreateClubRequestModel(
+                    bookTitle,
+                    bookAuthors,
+                    publicationYear,
+                    description,
+                    telegramChatLink
+            );
 
-        // open club
-        $(".filter-options").$(byText("Мои клубы")).click();
-        $(".clubs-list")
-                .$$(".club-card h2")
-                .findBy(exactText(username))
-                .closest(".club-card")
-                .$(".open-btn")
-                .click();
+            ResultsClubModel creatClub = createClubsClient.createClub(body, accessToken);
+            int clubId = creatClub.id();
 
-        // wrong leave club
-        $(".club-content").shouldBe(visible);
-        $(".leave-btn").click();
-        confirm();
-        $(".error").shouldHave(text("Не удалось покинуть клуб"));
+            // open club
+            open("/favicon.ico");
+            localStorage().setItem("book_club_auth", localStorageAuthBody);
+            open("/clubs/" + clubId);
+
+        });
+
+        step("[UI] Проверка отображения ошибки о невозможности покинуть клуб создателем", () -> {
+            // can't leave club
+            $(".club-content").shouldBe(visible);
+            $(".leave-btn").click();
+            confirm();
+            $(".error").shouldHave(text("Не удалось покинуть клуб"));
+        });
     }
 }
