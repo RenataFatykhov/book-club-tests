@@ -1,4 +1,4 @@
-package tests;
+package tests.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import models.clubs.CreateClubRequestModel;
@@ -10,13 +10,15 @@ import models.login.SuccessfulLoginResponseModel;
 import models.registration.RegistrationBodyModel;
 import models.registration.RegistrationResponseModel;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pages.ClubInfoPage;
+import tests.TestBase;
 
 import static data.TestData.*;
 import static io.qameta.allure.Allure.step;
 
-public class ClubTests extends TestBase {
+public class ClubsUiTests extends TestBase {
 
     ClubInfoPage clubInfoPage = new ClubInfoPage();
 
@@ -40,6 +42,7 @@ public class ClubTests extends TestBase {
     }
 
     @Test
+    @DisplayName("Попытка покинуть клуб оунером возвращает 400 и текст ошибки")
     public void cantLeaveClubAsOwnerTest() {
 
         step("Открытие приложения с авторизацией из localStorage", () -> {
