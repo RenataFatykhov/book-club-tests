@@ -11,14 +11,14 @@ import models.registration.RegistrationBodyModel;
 import models.registration.RegistrationResponseModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import pages.ClubInfoPage;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Selenide.*;
 import static data.TestData.*;
 import static io.qameta.allure.Allure.step;
 
 public class ClubTests extends TestBase {
+
+    ClubInfoPage clubInfoPage = new ClubInfoPage();
 
     String bookTitle;
     String bookAuthors;
@@ -80,18 +80,19 @@ public class ClubTests extends TestBase {
             int clubId = creatClub.id();
 
             // open club
-            open("/favicon.ico");
-            localStorage().setItem("book_club_auth", localStorageAuthBody);
-            open("/clubs/" + clubId);
-
+            clubInfoPage
+                    .openPage()
+                    .putAuthIntoLocalStorage(localStorageAuthBody)
+                    .openClubInfoPage(clubId);
         });
 
+        // can't leave club
         step("[UI] Проверка отображения ошибки о невозможности покинуть клуб создателем", () -> {
-            // can't leave club
-            $(".club-content").shouldBe(visible);
-            $(".leave-btn").click();
-            confirm();
-            $(".error").shouldHave(text("Не удалось покинуть клуб"));
+            clubInfoPage
+                    .checkClubInfo()
+                    .clickLeaveBtn()
+                    .confirmLeaveClub()
+                    .checkLeaveClubError();
         });
     }
 }

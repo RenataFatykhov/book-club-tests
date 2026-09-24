@@ -86,4 +86,7 @@ public class TestData {
 
     // create book club
     public static final String EXPECTED_EXISTING_CLUB_ERROR_MESSAGE = "Book Club with this Book Title already exists.";
+
+    // ui
+    public static final String EXPECTED_CANT_LEAVE_CLUB_FOR_OWNER_ERROR_MESSAGE = "Не удалось покинуть клуб";
 }
