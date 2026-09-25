@@ -10,19 +10,17 @@ import models.registration.RegistrationResponseModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import tests.TestBase;
 
 import java.util.Locale;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
-import static com.codeborne.selenide.Selenide.$;
 import static data.TestData.generatePassword;
 import static data.TestData.generateUsername;
 import static io.qameta.allure.Allure.step;
 
-public class UserUiTests extends TestBase {
+public class UserUiTests extends UiTestBase {
 
     String username;
     String password;

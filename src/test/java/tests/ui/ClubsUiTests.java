@@ -13,12 +13,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pages.ClubInfoPage;
-import tests.TestBase;
 
 import static data.TestData.*;
 import static io.qameta.allure.Allure.step;
 
-public class ClubsUiTests extends TestBase {
+public class ClubsUiTests extends UiTestBase {
 
     ClubInfoPage clubInfoPage = new ClubInfoPage();
 

@@ -39,7 +39,7 @@ public class CreateClubsTests extends TestBase {
     public void successfulCreateClubTest() {
 
         RegistrationSteps registrationSteps = new RegistrationSteps();
-        int expectedlId = registrationSteps.registerUser(username, password).id();
+        int expectedId = registrationSteps.registerUser(username, password).id();
 
         AuthSteps authSteps = new AuthSteps();
         String accessToken = authSteps.login(username, password).access();
@@ -55,7 +55,7 @@ public class CreateClubsTests extends TestBase {
         ResultsClubModel response = createClubsClient.createClub(body, accessToken);
 
         step("Проверить данные созданного книжного клуба", () -> {
-            assertThat(response.owner()).isEqualTo(expectedlId);
+            assertThat(response.owner()).isEqualTo(expectedId);
             assertThat(response.bookTitle()).isEqualTo(body.bookTitle());
             assertThat(response.bookAuthors()).isEqualTo(body.bookAuthors());
             assertThat(response.publicationYear()).isEqualTo(body.publicationYear());

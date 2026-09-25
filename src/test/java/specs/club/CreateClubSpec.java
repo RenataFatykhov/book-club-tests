@@ -10,7 +10,7 @@ public class CreateClubSpec {
 
     public static ResponseSpecification successfulCreateClubResponseSpec = baseResponseSpec()
             .expectStatusCode(201)
-            .expectBody(matchesJsonSchemaInClasspath("schemas/club/create_club_response_shema.json"))
+            .expectBody(matchesJsonSchemaInClasspath("schemas/club/create_club_response_sсhema.json"))
             .expectBody("bookTitle", notNullValue())
             .expectBody("bookAuthors", notNullValue())
             .build();

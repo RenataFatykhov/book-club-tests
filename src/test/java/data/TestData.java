@@ -89,4 +89,11 @@ public class TestData {
 
     // ui
     public static final String EXPECTED_CANT_LEAVE_CLUB_FOR_OWNER_ERROR_MESSAGE = "Не удалось покинуть клуб";
+    public static final String EXPECTED_PROFILE_BTN_NAME = "Профиль";
+    public static final String EXPECTED_CLUB_BTN_NAME = "Клубы";
+    public static final String EXPECTED_CREATE_CLUB_BTN_NAME = "Создать клуб";
+    public static final String EXPECTED_MISMATCH_PASSWORD_ERROR_MESSAGE = "Пароли не совпадают";
+    public static final String EXPECTED_SAME_CREDENTIALS_ERROR_MESSAGE = "Ошибка при регистрации";
+
+
 }
