@@ -94,6 +94,8 @@ public class TestData {
     public static final String EXPECTED_CREATE_CLUB_BTN_NAME = "Создать клуб";
     public static final String EXPECTED_MISMATCH_PASSWORD_ERROR_MESSAGE = "Пароли не совпадают";
     public static final String EXPECTED_SAME_CREDENTIALS_ERROR_MESSAGE = "Ошибка при регистрации";
+    public static final String EXPECTED_WRONG_CREDENTIALS_ERROR_MESSAGE = "Ты не пройдешь!";
+
 
 
 }
