@@ -37,13 +37,13 @@ public class ClubInfoPage {
         return this;
     }
 
-    @Step("Проверка видимости информации о клубе")
+    @Step("Проверка видимости кнопки Покинуть клуб")
     public ClubInfoPage clickLeaveBtn() {
         leaveBtn.click();
         return this;
     }
 
-    @Step("Проверка видимости информации о клубе")
+    @Step("Проверка видимости подтверждения выхода из клуба")
     public ClubInfoPage confirmLeaveClub() {
         confirm();
         return this;
