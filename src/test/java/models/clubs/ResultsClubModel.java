@@ -1,5 +1,7 @@
 package models.clubs;
 
+import models.clubs.review.ReviewModel;
+
 import java.util.List;
 
 public record ResultsClubModel(

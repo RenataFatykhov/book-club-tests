@@ -1,4 +1,6 @@
-package models.clubs;
+package models.clubs.review;
+
+import models.clubs.UserModel;
 
 public record ReviewModel(
         Integer id,

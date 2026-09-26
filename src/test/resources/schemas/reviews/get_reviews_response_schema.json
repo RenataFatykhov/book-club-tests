@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/Welcome7",
+  "definitions": {
+    "Welcome7": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "next": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri",
+          "qt-uri-protocols": [
+            "http"
+          ]
+        },
+        "previous": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uri",
+          "qt-uri-protocols": [
+            "http"
+          ]
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Result"
+          }
+        }
+      },
+      "required": [
+        "count",
+        "next",
+        "previous",
+        "results"
+      ],
+      "title": "Welcome7"
+    },
+    "Result": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "club": {
+          "type": "integer"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "review": {
+          "type": "string"
+        },
+        "assessment": {
+          "type": "integer"
+        },
+        "readPages": {
+          "type": "integer"
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "modified": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "assessment",
+        "club",
+        "created",
+        "id",
+        "modified",
+        "readPages",
+        "review",
+        "user"
+      ],
+      "title": "Result"
+    },
+    "User": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "username"
+      ],
+      "title": "User"
+    }
+  }
+}

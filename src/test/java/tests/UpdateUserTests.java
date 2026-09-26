@@ -79,7 +79,7 @@ public class UpdateUserTests extends TestBase {
         step("Проверить сообщение об отсутствии авторизации при обновлении профиля", () -> {
             String actualDetail = response.detail();
 
-            assertThat(actualDetail).isEqualTo(EXPECTED_UPDATE_AUTH_DETAIL);
+            assertThat(actualDetail).isEqualTo(EXPECTED_NOT_AUTH_DETAIL);
         });
 
     }

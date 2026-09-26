@@ -16,6 +16,7 @@ public class TestBase {
     protected UserApiClient userClient;
     protected ClubsApiClient clubsClient;
     protected CreateClubsApiClient createClubsClient;
+    protected ReviewsApiClient reviewsClient;
 
     @BeforeAll
     public static void setUp() {
@@ -34,6 +35,7 @@ public class TestBase {
         userClient = new UserApiClient();
         clubsClient = new ClubsApiClient();
         createClubsClient = new CreateClubsApiClient();
+        reviewsClient = new ReviewsApiClient();
     }
 
     @BeforeEach

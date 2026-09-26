@@ -82,7 +82,7 @@ public class TestData {
     public static final String EXPECTED_TOKEN_ERROR_CODE = "token_not_valid";
 
     // update
-    public static final String EXPECTED_UPDATE_AUTH_DETAIL = "Authentication credentials were not provided.";
+    public static final String EXPECTED_NOT_AUTH_DETAIL = "Authentication credentials were not provided.";
 
     // create book club
     public static final String EXPECTED_EXISTING_CLUB_ERROR_MESSAGE = "Book Club with this Book Title already exists.";
@@ -95,7 +95,6 @@ public class TestData {
     public static final String EXPECTED_MISMATCH_PASSWORD_ERROR_MESSAGE = "Пароли не совпадают";
     public static final String EXPECTED_SAME_CREDENTIALS_ERROR_MESSAGE = "Ошибка при регистрации";
     public static final String EXPECTED_WRONG_CREDENTIALS_ERROR_MESSAGE = "Ты не пройдешь!";
-
 
 
 }
