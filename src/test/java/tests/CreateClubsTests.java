@@ -90,4 +90,5 @@ public class CreateClubsTests extends TestBase {
             assertThat(secondResponse.bookTitle().get(0)).isEqualTo(EXPECTED_EXISTING_CLUB_ERROR_MESSAGE);
         });
     }
+
 }

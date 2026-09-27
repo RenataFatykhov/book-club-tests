@@ -52,12 +52,24 @@ public class TestData {
         return faker.number().numberBetween(1000, 2026);
     }
 
-    public static String generateDescription() {
-        return faker.lorem().paragraph(5);
+    public static int generateAssessment() {
+        return faker.number().numberBetween(1, 5);
+    }
+
+    public static int generateReadPages() {
+        return faker.number().numberBetween(1, 100);
+    }
+
+    public static String generateReview() {
+        return faker.lorem().sentence();
     }
 
     public static String generateTelegramChatLink() {
         return "https://t.me/" + faker.name().firstName();
+    }
+
+    public static String generateDescription() {
+        return faker.lorem().paragraph(5);
     }
 
 
@@ -86,6 +98,11 @@ public class TestData {
 
     // create book club
     public static final String EXPECTED_EXISTING_CLUB_ERROR_MESSAGE = "Book Club with this Book Title already exists.";
+
+    // reviews
+
+    public static final String EXPECTED_REVIEW_NOT_FOUND_ERROR_MESSAGE = "No BookReview matches the given query.";
+    public static final String EXPECTED_INVALID_PAGE_ERROR_MESSAGE = "Invalid page.";
 
     // ui
     public static final String EXPECTED_CANT_LEAVE_CLUB_FOR_OWNER_ERROR_MESSAGE = "Не удалось покинуть клуб";

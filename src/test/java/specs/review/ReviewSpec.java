@@ -14,4 +14,21 @@ public class ReviewSpec {
             .expectBody("count", notNullValue())
             .expectBody("results", notNullValue())
             .build();
+
+    public static ResponseSpecification getReviewByIdResponseSpec = baseResponseSpec()
+            .expectStatusCode(200)
+            .expectBody(matchesJsonSchemaInClasspath("schemas/reviews/get_reviews_by_id_response_schema.json"))
+            .expectBody("id", notNullValue())
+            .expectBody("club", notNullValue())
+            .build();
+
+    public static ResponseSpecification notFoundReviewResponseSpec = baseResponseSpec()
+            .expectStatusCode(404)
+            .expectBody(matchesJsonSchemaInClasspath("schemas/reviews/get_reviews_by_new_book_id_response_schema.json"))
+            .expectBody("detail", notNullValue())
+            .build();
+
+    public static ResponseSpecification successfulDeleteReviewResponseSpec = baseResponseSpec()
+            .expectStatusCode(204)
+            .build();
 }

@@ -1,9 +1,9 @@
 package tests;
 
 import models.clubs.ClubRequestPaginationModel;
+import models.clubs.review.ReviewErrorResponseModel;
 import models.clubs.review.ReviewModel;
 import models.clubs.review.ReviewResponseModel;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -11,21 +11,11 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
-import static data.TestData.generatePassword;
-import static data.TestData.generateUsername;
+import static data.TestData.EXPECTED_INVALID_PAGE_ERROR_MESSAGE;
 import static io.qameta.allure.Allure.step;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GetReviewsTests extends TestBase {
-    String username;
-    String password;
-
-    @BeforeEach
-    public void prepareTestData() {
-        username = generateUsername();
-        password = generatePassword();
-    }
-
     @Test
     @DisplayName("Получение списка отзывов возвращает 200")
     public void noParametersSuccessfulGetReviewsTest() {
@@ -86,5 +76,13 @@ public class GetReviewsTests extends TestBase {
             assertThat(secondPageIds).doesNotContainAnyElementsOf(firstPageIds);
         });
 
+    }
+
+    @Test
+    @DisplayName("Получение списка отзывов с page=0 возвращает 404")
+    public void getReviewsWithInvalidPageTest() {
+        ReviewErrorResponseModel response = reviewsClient.getReviewsWithInvalidPage();
+
+        assertThat(response.detail()).isEqualTo(EXPECTED_INVALID_PAGE_ERROR_MESSAGE);
     }
 }

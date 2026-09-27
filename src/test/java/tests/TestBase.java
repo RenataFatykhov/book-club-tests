@@ -1,9 +1,6 @@
 package tests;
 
 import clients.*;
-import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.logevents.SelenideLogger;
-import io.qameta.allure.selenide.AllureSelenide;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,14 +14,14 @@ public class TestBase {
     protected ClubsApiClient clubsClient;
     protected CreateClubsApiClient createClubsClient;
     protected ReviewsApiClient reviewsClient;
+    protected CreateReviewsApiClient createReviewsClient;
+    protected GetByIdReviewApiClient getByIdReviewClient;
+    protected GetByIdBookApiClient getByIdBookClient;
 
     @BeforeAll
     public static void setUp() {
         RestAssured.baseURI = "https://book-club.qa.guru";
         RestAssured.basePath = "/api/v1";
-
-        Configuration.baseUrl = "https://book-club.qa.guru";
-        Configuration.browserSize = "1920x1080";
     }
 
     @BeforeEach
@@ -36,11 +33,8 @@ public class TestBase {
         clubsClient = new ClubsApiClient();
         createClubsClient = new CreateClubsApiClient();
         reviewsClient = new ReviewsApiClient();
+        createReviewsClient = new CreateReviewsApiClient();
+        getByIdReviewClient = new GetByIdReviewApiClient();
+        getByIdBookClient = new GetByIdBookApiClient();
     }
-
-    @BeforeEach
-    void setUpAllure() {
-        SelenideLogger.addListener("allure", new AllureSelenide());
-    }
-
 }

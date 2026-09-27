@@ -20,4 +20,5 @@ public class CreateClubSpec {
             .expectBody(matchesJsonSchemaInClasspath("schemas/club/existing_create_club_response_schema.json"))
             .expectBody("bookTitle", notNullValue())
             .build();
+
 }

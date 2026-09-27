@@ -7,18 +7,22 @@ import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
-import static data.TestData.*;
+import static data.TestData.EXPECTED_CLUB_BTN_NAME;
+import static data.TestData.EXPECTED_CREATE_CLUB_BTN_NAME;
+import static data.TestData.EXPECTED_MISMATCH_PASSWORD_ERROR_MESSAGE;
+import static data.TestData.EXPECTED_PROFILE_BTN_NAME;
+import static data.TestData.EXPECTED_SAME_CREDENTIALS_ERROR_MESSAGE;
 
 public class RegistrationPage {
     private final SelenideElement usernameInput = $("[data-testid=username-input]");
     private final SelenideElement passwordInput = $("[data-testid=password-input]");
-    private final SelenideElement confirmUsernameInput = $("[data-testid=confirm-password-input]");
+    private final SelenideElement confirmPasswordInput = $("[data-testid=confirm-password-input]");
     private final SelenideElement mainPage = $(".clubs-page");
     private final SelenideElement profileBtn = $("[data-testid=profile-link]");
     private final SelenideElement clubBtn = $("[data-testid=clubs-link]");
     private final SelenideElement createClubBtn = $("[data-testid=create-club-link]");
-    private final SelenideElement missmatchPasswordError = $("[data-testid=password-mismatch-error]");
-    private final SelenideElement sameCredentialsError = $("[data-testid=password-mismatch-error]");
+    private final SelenideElement mismatchPasswordError = $("[data-testid=password-mismatch-error]");
+    private final SelenideElement sameCredentialsError = $("[data-testid=error-message]");
 
 
     @Step("Открыть страницу регистрации")
@@ -41,13 +45,13 @@ public class RegistrationPage {
 
     @Step("Заполнить поле confirm password верным паролем")
     public RegistrationPage setTheSamePasswordAndConfirm(String value) {
-        confirmUsernameInput.setValue(value).pressEnter();
+        confirmPasswordInput.setValue(value).pressEnter();
         return this;
     }
 
     @Step("Заполнить поле confirm password неверным паролем")
     public RegistrationPage setNotTheSamePasswordAndConfirm(String value) {
-        confirmUsernameInput.setValue(value).pressEnter();
+        confirmPasswordInput.setValue(value).pressEnter();
         return this;
     }
 
@@ -77,7 +81,7 @@ public class RegistrationPage {
 
     @Step("Отображается ошибка несовпадения пароля подтверждения")
     public RegistrationPage checkMismatchPasswordError() {
-        missmatchPasswordError.shouldBe(visible).shouldHave(text(EXPECTED_MISMATCH_PASSWORD_ERROR_MESSAGE));
+        mismatchPasswordError.shouldBe(visible).shouldHave(text(EXPECTED_MISMATCH_PASSWORD_ERROR_MESSAGE));
         return this;
     }
 

@@ -14,4 +14,12 @@ public class ClubSpec {
             .expectBody("count", notNullValue())
             .expectBody("results", notNullValue())
             .build();
+
+    public static ResponseSpecification getClubByIdResponseSpec = baseResponseSpec()
+            .expectStatusCode(200)
+            .expectBody(matchesJsonSchemaInClasspath("schemas/club/create_club_response_sсhema.json"))
+            .expectBody("bookTitle", notNullValue())
+            .expectBody("bookAuthors", notNullValue())
+            .expectBody("id", notNullValue())
+            .build();
 }
