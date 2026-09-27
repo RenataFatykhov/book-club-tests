@@ -20,7 +20,7 @@ public class UiTestBase extends TestBase {
     @BeforeAll
     public static void setUpUi() {
         Configuration.browser = System.getProperty("browser", "chrome");
-        Configuration.browserVersion = System.getProperty("browserVersion");
+        Configuration.browserVersion = System.getProperty("browserVersion", "148.0");
         Configuration.browserSize = System.getProperty("browserSize", "1920x1080");
         Configuration.baseUrl = System.getProperty("baseUrl", "https://book-club.qa.guru");
         Configuration.remote = System.getProperty("remote");
