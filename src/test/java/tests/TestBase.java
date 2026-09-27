@@ -19,8 +19,8 @@ public class TestBase {
     protected GetByIdBookApiClient getByIdBookClient;
 
     @BeforeAll
-    public static void setUp() {
-        RestAssured.baseURI = "https://book-club.qa.guru";
+    public static void setUpApi() {
+        RestAssured.baseURI = System.getProperty("baseUrl", "https://book-club.qa.guru");
         RestAssured.basePath = "/api/v1";
     }
 

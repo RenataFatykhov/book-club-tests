@@ -8,16 +8,29 @@ import io.qameta.allure.selenide.AllureSelenide;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import tests.TestBase;
+
+import java.util.Map;
 
 import static com.codeborne.selenide.Selenide.closeWebDriver;
 
 public class UiTestBase extends TestBase {
 
     @BeforeAll
-    public static void setUp() {
-        Configuration.baseUrl = "https://book-club.qa.guru";
-        Configuration.browserSize = "1920x1080";
+    public static void setUpUi() {
+        Configuration.browser = System.getProperty("browser", "chrome");
+        Configuration.browserVersion = System.getProperty("browserVersion");
+        Configuration.browserSize = System.getProperty("browserSize", "1920x1080");
+        Configuration.baseUrl = System.getProperty("baseUrl", "https://book-club.qa.guru");
+        Configuration.remote = System.getProperty("remote");
+
+        DesiredCapabilities capabilities = new DesiredCapabilities();
+        capabilities.setCapability("selenoid:options", Map.<String, Object>of(
+                "enableVNC", true,
+                "enableVideo", true
+        ));
+        Configuration.browserCapabilities = capabilities;
     }
 
     @BeforeEach
